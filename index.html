@@ -1124,6 +1124,54 @@ function Dashboard({ onNavigate }) {
         </div>
       ))}
 
+
+      {/* Insights + Informe */}
+      {(() => {
+        const topInsights = generateInsights().slice(0, 2);
+        const [copied, setCopied] = React.useState(false);
+        function copyReport() {
+          const txt = generateReport();
+          navigator.clipboard.writeText(txt).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+          }).catch(() => {
+            const el = document.createElement('textarea');
+            el.value = txt; document.body.appendChild(el);
+            el.select(); document.execCommand('copy');
+            document.body.removeChild(el);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500);
+          });
+        }
+        return (
+          <>
+            {topInsights.length > 0 && (
+              <>
+                <div className="section-label">Coach</div>
+                {topInsights.map((ins, i) => (
+                  <div key={i} className="card" style={{margin:'0 16px 8px', padding:'12px 14px',
+                    borderLeft:`3px solid ${ins.color}`, display:'flex', gap:10, alignItems:'flex-start'}}>
+                    <span style={{fontSize:18, flexShrink:0, lineHeight:1.4}}>{ins.icon}</span>
+                    <div>
+                      <div style={{fontSize:12, fontWeight:700, color:ins.color, marginBottom:2}}>{ins.title}</div>
+                      <div style={{fontSize:12, color:'var(--muted2)', lineHeight:1.4}}>{ins.text}</div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
+            <div style={{margin:'8px 16px 0'}}>
+              <button className="btn btn-secondary btn-full" onClick={copyReport}
+                style={{fontSize:13, gap:8}}>
+                {copied
+                  ? <><span>✅</span> Informe copiado — pégalo en Claude</>
+                  : <><span>📋</span> Copiar informe para Claude</>}
+              </button>
+            </div>
+          </>
+        );
+      })()}
+
       <div style={{height:8}}></div>
     </div>
   );
@@ -1821,6 +1869,80 @@ function PlanScreen({ onNavigate }) {
 }
 
 
+
+function generateReport() {
+  const today = new Date();
+  const ws = DB.getAllSessions().sort((a, b) => b.date.localeCompare(a.date));
+  const rs = DB.getRunSessions().sort((a, b) => b.date.localeCompare(a.date));
+  const ts = DB.getTennisSessions().sort((a, b) => b.date.localeCompare(a.date));
+  const ap = getActiveWeightsPhase();
+  const rp = getActiveRunPhase();
+  const tw = ap ? Math.round((new Date(ap.end) - new Date(ap.start)) / (7 * 24 * 3600 * 1000)) : 8;
+  const streak = DB.getRunStreak();
+
+  let r = `=== INFORME DE ENTRENAMIENTO — Pablo ===
+Fecha: ${today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+
+PERFIL: Pablo, 1.83m, ~80kg, nivel intermedio. Creatina 5g/día.
+OBJETIVO: Reducir grasa abdominal + masa muscular + fuerza progresiva.
+META: Media maratón — octubre 2026.
+
+FASES ACTIVAS
+• Pesas: ${ap?.name} — semana ${weeksElapsed(ap?.start)}/${tw}
+• Running: ${rp?.name}
+• Racha running: ${streak} semanas consecutivas
+
+`;
+
+  r += `ÚLTIMAS SESIONES DE PESAS\n`;
+  ws.slice(0, 6).forEach(s => {
+    r += `\n[${s.date} — ${s.type.toUpperCase()} DAY]\n`;
+    (s.exercises || []).forEach(ex => {
+      const def = (D.exercises.fase2[s.type] || []).find(e => e.id === ex.id);
+      const name = def?.name || ex.id;
+      const sets = (ex.sets || []).map(st => `${st.reps}×${st.weight}kg`).join(' / ');
+      const hit = def && !def.isCore && (ex.sets || []).every(st => st.reps >= (def.reps || 10));
+      r += `  ${name}: ${sets}${hit ? ' ✅ objetivo' : ''}\n`;
+    });
+  });
+
+  r += `\nRUNNING RECIENTE\n`;
+  if (rs.length === 0) r += '  Sin sesiones registradas\n';
+  rs.slice(0, 5).forEach(s => {
+    r += `  ${s.date}: ${s.distance}km @ ${s.pace}/km +${s.elevation}m${s.notes ? ' — "' + s.notes + '"' : ''}\n`;
+  });
+
+  r += `\nTENIS RECIENTE\n`;
+  if (ts.length === 0) r += '  Sin sesiones registradas\n';
+  ts.slice(0, 3).forEach(s => {
+    r += `  ${s.date}: ${s.duration}min\n`;
+  });
+
+  r += `\nPROGRESIÓN DESDE FASE 1\n`;
+  let progLines = 0;
+  Object.entries(D.progressionData).forEach(([id, data]) => {
+    if (data.length < 2 || progLines >= 8) return;
+    const name = Object.values(D.exercises.fase2).flat().find(e => e.id === id)?.name || id;
+    const first = data[0].weight;
+    const last = data[data.length - 1].weight;
+    const diff = (last - first).toFixed(1);
+    if (parseFloat(diff) !== 0) { r += `  ${name}: ${first}kg → ${last}kg (${parseFloat(diff) > 0 ? '+' : ''}${diff}kg)\n`; progLines++; }
+  });
+
+  r += `\nINSIGHTS ACTUALES\n`;
+  generateInsights().forEach(i => { r += `  ${i.icon} ${i.title}: ${i.text}\n`; });
+
+  r += `\nREGLAS DE PROGRESIÓN
+• Bloques 8 semanas sin cambiar ejercicios
+• Solo 1-2 ejercicios suben por semana — no subir hasta consolidar reps (10-12)
+• Técnica antes que peso
+• Running Fase 1: ritmo conversacional, nunca zona umbral
+• Push Day + Tenis mismo día: cuidar hombro anterior
+`;
+
+  return r;
+}
+
 // ====================================================
 // INSIGHTS GENERATOR
 // ====================================================
@@ -2176,7 +2298,7 @@ function App() {
   const tabs = [
     { id: 'home', label: 'Inicio', icon: Icons.home },
     { id: 'session', label: 'Sesión', icon: Icons.dumbbell },
-    { id: 'coach', label: 'Coach', icon: Icons.coach },
+    { id: 'run', label: 'Running', icon: Icons.run },
     { id: 'progress', label: 'Progres.', icon: Icons.chart },
     { id: 'history', label: 'Historial', icon: Icons.history },
   ];
@@ -2197,7 +2319,7 @@ function App() {
         {tab === 'run' && <RunLogScreen onBack={() => setTab('home')}/>}
         {tab === 'progress' && <ProgressionScreen/>}
         {tab === 'history' && <HistoryScreen onNavigate={navigate}/>}
-        {tab === 'coach' && <CoachScreen/>}
+        {tab === 'run' && <RunLogScreen onBack={() => setTab('home')}/>}
       </div>
     );
   }
