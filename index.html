@@ -46,12 +46,12 @@ window.APP_DATA = {
   phases: {
     weights: [
       { id: "fase1", name: "Fase 1 — Fuerza", start: "2026-02-18", end: "2026-04-14", status: "completed", repRange: "4x8", description: "Fuerza base. Bloques 8 semanas sin cambiar ejercicios." },
-      { id: "fase2", name: "Fase 2 — Hipertrofia", start: "2026-04-15", end: "2026-06-09", status: "active", repRange: "10-12", description: "Rango de reps sube a 10-12. Nuevos ejercicios incorporados." },
-      { id: "fase3", name: "Fase 3 — Mantenimiento", start: "2026-06-10", end: null, status: "upcoming", repRange: "compuestos", description: "Pesas 2x semana. Running toma protagonismo. Prep media maratón." }
+      { id: "fase2", name: "Fase 2 — Hipertrofia", start: "2026-04-15", end: "2026-05-10", blockStart: "2026-03-16", repRange: "10-12", description: "Rango de reps sube a 10-12. Nuevos ejercicios incorporados." },
+      { id: "fase3", name: "Fase 3 — Mantenimiento", start: "2026-05-11", end: null, repRange: "compuestos", description: "Pesas 2x semana. Running toma protagonismo. Prep media maratón." }
     ],
     running: [
-      { id: "rFase1", name: "Fase 1 — Base Building", start: "2026-03-18", end: "2026-05-12", status: "active", description: "Ritmo conversacional. 2 sesiones/semana. 20-35 min.", paceTarget: { flat: "5:50-6:10", hills: "6:20-6:40" } },
-      { id: "rFase2", name: "Fase 2 — Desarrollo Aeróbico", start: "2026-05-13", end: "2026-07-07", status: "upcoming", description: "30-45 min. Tirada larga dominical. 1 sesión series cada 2 semanas." },
+      { id: "rFase1", name: "Fase 1 — Base Building", start: "2026-03-18", end: "2026-05-10", blockStart: "2026-03-16", description: "Ritmo conversacional. 2 sesiones/semana. 20-35 min.", paceTarget: { flat: "5:50-6:10", hills: "6:20-6:40" } },
+      { id: "rFase2", name: "Fase 2 — Desarrollo Aeróbico", start: "2026-05-11", end: "2026-07-07", description: "30-45 min. Tirada larga dominical. 1 sesión series cada 2 semanas." },
       { id: "rFase3", name: "Fase 3 — Específica Media Maratón", start: "2026-07-08", end: "2026-09-29", status: "upcoming", description: "3 días/semana. Tirada larga 16-18km. Series calidad 1x semana." }
     ]
   },
@@ -60,19 +60,18 @@ window.APP_DATA = {
     fase2: {
       pull: [
         { id: "remo_barra_t", name: "Remo barra T", series: 4, reps: 10, weight: 32.5, increment: 2.5, notes: "Escápulas antes de tirar, pausa 1s contracción" },
-        { id: "jalon_agarre_neutro", name: "Jalón agarre neutro", series: 4, reps: 10, weight: 52.5, increment: 2.5, notes: "Depresión escapular antes, brazos = ganchos" },
+        { id: "jalon_agarre_neutro", name: "Jalón agarre abierto", series: 4, reps: 10, weight: 52.5, increment: 2.5, notes: "Depresión escapular antes, brazos = ganchos" },
         { id: "pullover_polea_alta", name: "Pullover polea alta", series: 3, reps: 12, weight: 17.5, increment: 2.5, notes: "Foco en estiramiento dorsal" },
         { id: "jalon_unilateral_polea", name: "Jalón unilateral polea", series: 3, reps: 10, weight: 20, increment: 2.5, notes: "Hombro abajo-atrás antes de mover brazo" },
         { id: "deltoides_posterior", name: "Deltoide posterior máquina", series: 4, reps: 10, weight: 40, increment: 2.5, notes: "Frecuencia 2 — aquí va todo el volumen" },
         { id: "rear_delt_row", name: "Rear delt row machine", series: 3, reps: 10, weight: 40, increment: 2.5, notes: "" },
-        { id: "rotacion_externa_polea", name: "Rotación externa polea baja", series: 3, reps: 15, weight: 5, increment: 1.25, notes: "Manguito rotador — prevención hombro tenis. Progresión muy lenta." }
       ],
       push: [
         { id: "press_inclinado_mancuernas", name: "Press inclinado mancuernas", series: 4, reps: 10, weight: 20, increment: 2, notes: "Codos 45°, bajada controlada" },
         { id: "press_hombro_mancuernas", name: "Press hombro mancuernas", series: 4, reps: 10, weight: 14, increment: 2, notes: "Sin arquear espalda baja" },
         { id: "press_pecho_maquina_a", name: "Press pecho Máquina A (recta)", series: 4, reps: 12, weight: 20, increment: 2.5, notes: "Movimiento recto, fase excéntrica controlada" },
         { id: "elevaciones_laterales_polea", name: "Elevaciones laterales polea", series: 4, reps: 12, weight: 5, increment: 2.5, notes: "Codo ligeramente flexionado, hasta altura hombro" },
-        { id: "extension_triceps_polea", name: "Extensión tríceps polea alta", series: 3, reps: 12, weight: 15, increment: 2.5, notes: "Único músculo grande sin trabajo directo en Fase 1" }
+        { id: "apertura_pecho_maquina", name: "Apertura en pecho en máquina", series: 3, reps: 12, weight: 15, increment: 2.5, notes: "Fase excéntrica controlada, pecho activo en todo el recorrido" }
       ],
       leg: [
         { id: "prensa_inclinada", name: "Prensa inclinada", series: 4, reps: 10, weight: 60, increment: 2.5, notes: "Rodillas alineadas, bajada controlada" },
@@ -80,8 +79,6 @@ window.APP_DATA = {
         { id: "extension_cuadriceps", name: "Extensión cuádriceps", series: 4, reps: 12, weight: 55, increment: 2.5, notes: "" },
         { id: "femoral_tumbado", name: "Femoral tumbado", series: 3, reps: 12, weight: 45, increment: 2.5, notes: "Pausa 1s contracción máxima" },
         { id: "abductores", name: "Abductores", series: 3, reps: 12, weight: 47.5, increment: 2.5, notes: "Sin rebote al volver" },
-        { id: "aductores_maquina", name: "Aductores máquina", series: 3, reps: 12, weight: 30, increment: 2.5, notes: "Equilibrio abductor/aductor — crítico para tenis" },
-        { id: "elevaciones_talon", name: "Elevaciones de talón", series: 3, reps: 15, weight: 0, increment: 5, notes: "URGENTE — gemelos sin trabajo en Fase 1" },
         { id: "core", name: "Core (plancha + hollow rocks)", series: 3, reps: 0, weight: 0, increment: 0, isCore: true, notes: "Plancha 3x45s + Hollow rocks 3x12. Al final, siempre." }
       ]
     }
@@ -183,7 +180,6 @@ window.APP_DATA = {
         { id: "jalon_unilateral_polea", sets: [{ reps: 10, weight: 20 }, { reps: 10, weight: 20 }, { reps: 10, weight: 20 }] },
         { id: "deltoides_posterior", sets: [{ reps: 10, weight: 40 }, { reps: 10, weight: 40 }, { reps: 10, weight: 40 }, { reps: 9, weight: 40 }] },
         { id: "rear_delt_row", sets: [{ reps: 10, weight: 40 }, { reps: 10, weight: 40 }, { reps: 9, weight: 40 }] },
-        { id: "rotacion_externa_polea", sets: [{ reps: 15, weight: 5 }, { reps: 15, weight: 5 }, { reps: 15, weight: 5 }] },
       ]
     },
     {
@@ -218,7 +214,6 @@ window.APP_DATA = {
         { id: "jalon_unilateral_polea", sets: [{ reps: 10, weight: 20 }, { reps: 10, weight: 20 }, { reps: 10, weight: 20 }] },
         { id: "deltoides_posterior", sets: [{ reps: 10, weight: 40 }, { reps: 10, weight: 40 }, { reps: 10, weight: 40 }, { reps: 10, weight: 40 }] },
         { id: "rear_delt_row", sets: [{ reps: 10, weight: 40 }, { reps: 10, weight: 40 }, { reps: 10, weight: 40 }] },
-        { id: "rotacion_externa_polea", sets: [{ reps: 15, weight: 5 }, { reps: 15, weight: 5 }, { reps: 15, weight: 5 }] },
       ]
     },
     {
@@ -375,28 +370,20 @@ window.TrainingDB = {
     .phone-shell { transform: scale(calc(min(100vh - 40px, 844px) / 844px)); transform-origin: center center; }
   }
 
-  .status-bar {
-    height: 50px;
+  .app-header {
+    height: 52px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px 0;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    justify-content: center;
+    gap: 8px;
+    padding-top: env(safe-area-inset-top, 0px);
+    border-bottom: 1px solid var(--border);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
     color: var(--text);
-    position: relative;
   }
-  .status-bar .notch {
-    width: 120px; height: 34px;
-    background: #000;
-    border-radius: 0 0 20px 20px;
-    position: absolute;
-    top: 0; left: 50%; transform: translateX(-50%);
-  }
-  .status-bar .time { font-size: 15px; font-weight: 700; z-index: 1; }
-  .status-bar .icons { display: flex; gap: 6px; align-items: center; z-index: 1; }
 
   .screen-container {
     flex: 1;
@@ -833,10 +820,14 @@ function weeksElapsed(dateStr) {
   return Math.max(0, Math.floor(diff / (7 * 24 * 3600 * 1000)));
 }
 function getActiveWeightsPhase() {
-  return D.phases.weights.find(p => p.status === 'active') || D.phases.weights[1];
+  const today = isoDate(new Date());
+  return D.phases.weights.find(p => p.start <= today && (!p.end || today <= p.end))
+    || D.phases.weights[D.phases.weights.length - 1];
 }
 function getActiveRunPhase() {
-  return D.phases.running.find(p => p.status === 'active') || D.phases.running[0];
+  const today = isoDate(new Date());
+  return D.phases.running.find(p => p.start <= today && (!p.end || today <= p.end))
+    || D.phases.running[D.phases.running.length - 1];
 }
 function getNextSession() {
   const today = new Date();
@@ -918,20 +909,109 @@ function Ring({ pct, color, size = 56, stroke = 5, children }) {
 }
 
 // ====================================================
+// COMPONENT: COACH DASHBOARD
+// ====================================================
+function CoachDashboard() {
+  const [copied, setCopied] = React.useState(false);
+  const [selectedId, setSelectedId] = React.useState('');
+  const topInsights = generateInsights().slice(0, 2);
+
+  const allSessions = [
+    ...DB.getAllSessions().map(s => ({...s, _kind:'weights'})),
+    ...DB.getRunSessions().map(s => ({...s, _kind:'running'}))
+  ].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 8);
+
+  const selected = selectedId ? allSessions.find(s => s.id === selectedId) : null;
+
+  function sessionLabel(s) {
+    if (s._kind === 'running') return `🏃 Running ${s.distance}km — ${s.date}`;
+    return `💪 ${s.type.toUpperCase()} Day — ${s.date}`;
+  }
+
+  function buildText() {
+    if (!selected) return generateReport();
+    if (selected._kind === 'running') {
+      const mins = Math.floor(selected.time / 60), secs = selected.time % 60;
+      return `[Running — ${selected.date}]\nDistancia: ${selected.distance}km  Ritmo: ${selected.pace}/km\nTiempo: ${mins}min${secs > 0 ? ' ' + secs + 's' : ''}\nDesnivel: +${selected.elevation}m  Lugar: ${selected.location || '-'}\nNotas: ${selected.notes || '-'}`;
+    }
+    const defs = D.exercises.fase2[selected.type] || [];
+    let txt = `[${selected.type.toUpperCase()} DAY — ${selected.date}]\n`;
+    (selected.exercises || []).forEach(ex => {
+      const def = defs.find(e => e.id === ex.id);
+      const name = def?.name || ex.id;
+      const sets = (ex.sets || []).map(st => `${st.reps}×${st.weight}kg`).join(' / ');
+      const hit = def && !def.isCore && (ex.sets || []).every(st => st.reps >= (def.reps || 10));
+      txt += `  ${name}: ${sets}${hit ? ' ✅' : ''}\n`;
+    });
+    return txt;
+  }
+
+  function doCopy() {
+    const txt = buildText();
+    navigator.clipboard.writeText(txt).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 2500);
+    }).catch(() => {
+      const el = document.createElement('textarea');
+      el.value = txt; document.body.appendChild(el); el.select();
+      document.execCommand('copy'); document.body.removeChild(el);
+      setCopied(true); setTimeout(() => setCopied(false), 2500);
+    });
+  }
+
+  return (
+    <>
+      {topInsights.length > 0 && (
+        <>
+          <div className="section-label">Coach</div>
+          {topInsights.map((ins, i) => (
+            <div key={i} className="card" style={{margin:'0 16px 8px', padding:'12px 14px',
+              borderLeft:`3px solid ${ins.color}`, display:'flex', gap:10, alignItems:'flex-start'}}>
+              <span style={{fontSize:18, flexShrink:0, lineHeight:1.4}}>{ins.icon}</span>
+              <div>
+                <div style={{fontSize:12, fontWeight:700, color:ins.color, marginBottom:2}}>{ins.title}</div>
+                <div style={{fontSize:12, color:'var(--muted2)', lineHeight:1.4}}>{ins.text}</div>
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+      <div style={{margin:'8px 16px 0'}}>
+        <select value={selectedId} onChange={e => setSelectedId(e.target.value)}
+          className="input" style={{fontSize:12, padding:'8px 10px', marginBottom:6,
+            color: selectedId ? 'var(--text)' : 'var(--muted)'}}>
+          <option value="">Informe completo</option>
+          {allSessions.map(s => <option key={s.id} value={s.id}>{sessionLabel(s)}</option>)}
+        </select>
+        <button className="btn btn-secondary btn-full" onClick={doCopy} style={{fontSize:13, gap:8}}>
+          {copied
+            ? <><span>✅</span> Copiado — pégalo en Claude</>
+            : <><span>📋</span> {selected ? 'Copiar sesión para Claude' : 'Copiar informe para Claude'}</>}
+        </button>
+      </div>
+    </>
+  );
+}
+
+// ====================================================
 // SCREEN: DASHBOARD
 // ====================================================
 function Dashboard({ onNavigate }) {
+  const [weekOffset, setWeekOffset] = React.useState(0);
   const today = new Date();
   const todayIso = isoDate(today);
-  const weekDays = getWeekDays();
-  const dayNames = ['L','M','X','J','V','S','D'];
+  const weekDays = (() => {
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - ((today.getDay() + 6) % 7) + weekOffset * 7);
+    return Array.from({length: 7}, (_, i) => { const d = new Date(mon); d.setDate(mon.getDate() + i); return d; });
+  })();
   const streak = DB.getRunStreak();
   const runSessions = DB.getRunSessions();
   const weightSessions = DB.getAllSessions();
   const activePh = getActiveWeightsPhase();
   const runPh = getActiveRunPhase();
-  const totalWeeks = activePh ? Math.round((new Date(activePh.end) - new Date(activePh.start)) / (7*24*3600*1000)) : 8;
-  const elapsed = activePh ? weeksElapsed(activePh.start) : 0;
+  const totalWeeks = 8;
+  const elapsed = activePh?.blockStart ? weeksElapsed(activePh.blockStart) : weeksElapsed(activePh?.start || '2026-04-15');
+  const runElapsed = runPh?.blockStart ? weeksElapsed(runPh.blockStart) : weeksElapsed(runPh?.start || '2026-03-18');
   const pct = Math.min(1, elapsed / totalWeeks);
   const next = getNextSession();
 
@@ -963,7 +1043,7 @@ function Dashboard({ onNavigate }) {
       <div style={{padding:'20px 20px 0'}}>
         <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
           <div>
-            <div style={{fontSize:13, color:'var(--muted)', fontWeight:500}}>Buenos días,</div>
+            <div style={{fontSize:13, color:'var(--muted)', fontWeight:500}}>Hola,</div>
             <div style={{fontSize:28, fontWeight:700, letterSpacing:'-0.5px'}}>Pablo 👋</div>
           </div>
           <div style={{textAlign:'right'}}>
@@ -1016,12 +1096,12 @@ function Dashboard({ onNavigate }) {
               <div style={{fontSize:12, color:'var(--muted)', fontWeight:500}}>🏃 Running</div>
               <div style={{fontSize:14, fontWeight:700, marginTop:2}}>{runPh?.name.split(' — ')[1]}</div>
             </div>
-            <Ring pct={Math.min(1, weeksElapsed(runPh?.start) / 8)} color="var(--running)" size={44} stroke={4}>
-              <span style={{fontSize:10, fontWeight:700, color:'var(--running)'}}>{weeksElapsed(runPh?.start)}w</span>
+            <Ring pct={Math.min(1, runElapsed / 8)} color="var(--running)" size={44} stroke={4}>
+              <span style={{fontSize:10, fontWeight:700, color:'var(--running)'}}>{runElapsed}w</span>
             </Ring>
           </div>
           <div className="progress-bar">
-            <div className="progress-fill" style={{width: `${Math.min(100, weeksElapsed(runPh?.start) / 8 * 100)}%`, background:'var(--running)'}}></div>
+            <div className="progress-fill" style={{width: `${Math.min(100, runElapsed / 8 * 100)}%`, background:'var(--running)'}}></div>
           </div>
           <div style={{display:'flex', justifyContent:'space-between', marginTop:5}}>
             <span style={{fontSize:10, color:'var(--muted)'}}>Objetivo</span>
@@ -1030,25 +1110,31 @@ function Dashboard({ onNavigate }) {
         </div>
       </div>
 
-      {/* This week */}
-      <div className="section-label">Esta semana</div>
+      {/* Calendar */}
+      <div style={{display:'flex', alignItems:'center', padding:'16px 20px 8px', justifyContent:'space-between'}}>
+        <div style={{fontSize:11, fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase', color:'var(--muted)'}}>Calendario</div>
+        <div style={{display:'flex', gap:4, alignItems:'center'}}>
+          <button onClick={() => setWeekOffset(o => o - 1)} style={{width:28, height:28, borderRadius:8, border:'1px solid var(--border)', background:'var(--surface)', color:'var(--muted)', fontSize:18, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font)', lineHeight:1}}>‹</button>
+          {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{padding:'3px 9px', borderRadius:8, border:'1px solid var(--accent)', background:'rgba(249,115,22,0.1)', color:'var(--accent)', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>Hoy</button>}
+          <button onClick={() => setWeekOffset(o => o + 1)} style={{width:28, height:28, borderRadius:8, border:'1px solid var(--border)', background:'var(--surface)', color:'var(--muted)', fontSize:18, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font)', lineHeight:1}}>›</button>
+        </div>
+      </div>
       <div className="week-grid">
         {weekDays.map((d, i) => {
           const iso = isoDate(d);
-          const dow = (i + 1) % 7; // Mon=1 in JS
           const actualDow = [1,2,3,4,5,6,0][i];
           const scheduled = D.weekSchedule[actualDow] || [];
-          const done = thisWeekSessions.some(s => s.date === iso);
-          const isToday = iso === todayIso;
-          const hasSesh = scheduled.length > 0 && scheduled[0].type !== 'rest';
+          const workouts = scheduled.filter(s => s.type !== 'rest');
+          const isToday = iso === todayIso && weekOffset === 0;
           return (
             <div key={i} className={`day-cell ${isToday ? 'today' : ''}`}>
               <div className="day-name">{['L','M','X','J','V','S','D'][i]}</div>
-              {hasSesh ? (
-                <div className="day-dot" style={{background: done ? scheduled[0].color : 'transparent', border: `1.5px solid ${scheduled[0].color}`, opacity: done ? 1 : 0.6}}></div>
-              ) : (
-                <div className="day-dot" style={{background:'var(--surface3)'}}></div>
-              )}
+              <div style={{display:'flex', flexDirection:'column', gap:2, alignItems:'center', minHeight:20}}>
+                {workouts.length > 0 ? workouts.map((sched, si) => {
+                  const isDone = thisWeekSessions.some(s => s.date === iso && s.type === sched.type);
+                  return <div key={si} className="day-dot" style={{background: isDone ? sched.color : 'transparent', border: `1.5px solid ${sched.color}`, opacity: isDone ? 1 : 0.6}}></div>;
+                }) : <div className="day-dot" style={{background:'var(--surface3)'}}></div>}
+              </div>
               <div className="day-date" style={{color: isToday ? 'var(--accent)' : 'var(--text)'}}>{d.getDate()}</div>
             </div>
           );
@@ -1125,52 +1211,8 @@ function Dashboard({ onNavigate }) {
       ))}
 
 
-      {/* Insights + Informe */}
-      {(() => {
-        const topInsights = generateInsights().slice(0, 2);
-        const [copied, setCopied] = React.useState(false);
-        function copyReport() {
-          const txt = generateReport();
-          navigator.clipboard.writeText(txt).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2500);
-          }).catch(() => {
-            const el = document.createElement('textarea');
-            el.value = txt; document.body.appendChild(el);
-            el.select(); document.execCommand('copy');
-            document.body.removeChild(el);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2500);
-          });
-        }
-        return (
-          <>
-            {topInsights.length > 0 && (
-              <>
-                <div className="section-label">Coach</div>
-                {topInsights.map((ins, i) => (
-                  <div key={i} className="card" style={{margin:'0 16px 8px', padding:'12px 14px',
-                    borderLeft:`3px solid ${ins.color}`, display:'flex', gap:10, alignItems:'flex-start'}}>
-                    <span style={{fontSize:18, flexShrink:0, lineHeight:1.4}}>{ins.icon}</span>
-                    <div>
-                      <div style={{fontSize:12, fontWeight:700, color:ins.color, marginBottom:2}}>{ins.title}</div>
-                      <div style={{fontSize:12, color:'var(--muted2)', lineHeight:1.4}}>{ins.text}</div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
-            <div style={{margin:'8px 16px 0'}}>
-              <button className="btn btn-secondary btn-full" onClick={copyReport}
-                style={{fontSize:13, gap:8}}>
-                {copied
-                  ? <><span>✅</span> Informe copiado — pégalo en Claude</>
-                  : <><span>📋</span> Copiar informe para Claude</>}
-              </button>
-            </div>
-          </>
-        );
-      })()}
+      {/* Coach section */}
+      <CoachDashboard />
 
       <div style={{height:8}}></div>
     </div>
@@ -2289,12 +2331,6 @@ function App() {
     setSubParams(null);
   }
 
-  const [time, setTime] = useState(currentTime());
-  useEffect(() => {
-    const t = setInterval(() => setTime(currentTime()), 30000);
-    return () => clearInterval(t);
-  }, []);
-
   const tabs = [
     { id: 'home', label: 'Inicio', icon: Icons.home },
     { id: 'session', label: 'Sesión', icon: Icons.dumbbell },
@@ -2313,13 +2349,12 @@ function App() {
     content = <HistoryScreen onNavigate={navigate}/>;
   } else {
     content = (
-      <div className="screen" key={tab}>
+      <div key={tab} style={{position:'absolute', inset:0}}>
         {tab === 'home' && <Dashboard onNavigate={navigate}/>}
         {tab === 'session' && <PlanScreen onNavigate={navigate}/>}
         {tab === 'run' && <RunLogScreen onBack={() => setTab('home')}/>}
         {tab === 'progress' && <ProgressionScreen/>}
         {tab === 'history' && <HistoryScreen onNavigate={navigate}/>}
-        {tab === 'run' && <RunLogScreen onBack={() => setTab('home')}/>}
       </div>
     );
   }
@@ -2327,15 +2362,10 @@ function App() {
   return (
     <>
     <div className="phone-shell">
-      {/* Status bar */}
-      <div className="status-bar">
-        <div className="notch"></div>
-        <span className="time">{time}</span>
-        <div className="icons">
-          <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor"><rect x="0" y="3" width="3" height="9" rx="1" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="1" opacity="0.6"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="2" height="12" rx="1"/></svg>
-          <svg width="15" height="12" viewBox="0 0 15 12" fill="currentColor"><path d="M7.5 2.5C9.8 2.5 11.8 3.5 13.2 5L14.5 3.7C12.7 1.9 10.2 0.8 7.5 0.8C4.8 0.8 2.3 1.9 0.5 3.7L1.8 5C3.2 3.5 5.2 2.5 7.5 2.5Z" opacity="0.4"/><path d="M7.5 5C9 5 10.4 5.6 11.4 6.6L12.7 5.3C11.3 3.9 9.5 3 7.5 3C5.5 3 3.7 3.9 2.3 5.3L3.6 6.6C4.6 5.6 6 5 7.5 5Z" opacity="0.7"/><circle cx="7.5" cy="10" r="1.5"/><path d="M7.5 7C8.6 7 9.6 7.5 10.3 8.2L11.6 6.9C10.5 5.8 9.1 5.1 7.5 5.1C5.9 5.1 4.5 5.8 3.4 6.9L4.7 8.2C5.4 7.5 6.4 7 7.5 7Z"/></svg>
-          <svg width="25" height="12" viewBox="0 0 25 12" fill="currentColor"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" strokeWidth="1.5" fill="none" opacity="0.4"/><rect x="1.5" y="2.5" width="16" height="7" rx="2" fill="currentColor"/><rect x="22" y="4" width="3" height="4" rx="1.5" fill="currentColor" opacity="0.4"/></svg>
-        </div>
+      {/* App header */}
+      <div className="app-header">
+        <span style={{fontSize:20}}>☕</span>
+        <span>Caffeine</span>
       </div>
 
       {/* Main content */}
