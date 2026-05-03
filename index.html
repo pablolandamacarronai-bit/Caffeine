@@ -1141,6 +1141,25 @@ function Dashboard({ onNavigate }) {
         })}
       </div>
 
+      {/* Calendar sync */}
+      <div style={{margin:'6px 16px 0', display:'flex', gap:8, alignItems:'center', padding:'10px 14px',
+        background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)'}}>
+        <span style={{fontSize:18, flexShrink:0}}>📅</span>
+        <div style={{flex:1, minWidth:0}}>
+          <div style={{fontSize:13, fontWeight:600}}>Sincronizar con Calendario</div>
+          <div style={{fontSize:11, color:'var(--muted)', marginTop:2, lineHeight:1.4}}>
+            Crea "☕ Caffeine" en tu app Calendario.
+            Para eliminar: Calendarios → ☕ Caffeine → Eliminar.
+          </div>
+        </div>
+        <a href="webcal://pablolandamacarronai-bit.github.io/Caffeine/training.ics"
+          style={{flexShrink:0, padding:'7px 13px', borderRadius:'var(--radius-sm)',
+            background:'var(--accent)', color:'#fff', fontSize:12, fontWeight:700,
+            textDecoration:'none', whiteSpace:'nowrap'}}>
+          Añadir
+        </a>
+      </div>
+
       {/* Today */}
       <div className="section-label">Hoy</div>
       {todaySchedule.length > 0 ? (
