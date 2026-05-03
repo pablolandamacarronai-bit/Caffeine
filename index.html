@@ -1451,7 +1451,7 @@ function SessionScreen({ params, onNavigate, onBack }) {
 
       <div style={{padding:'16px'}}>
         <button className="btn btn-primary btn-full" onClick={save}>
-          {Icons.check} Guardar sesión
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Guardar sesión
         </button>
       </div>
     </div>
@@ -1876,13 +1876,6 @@ function PlanScreen({ onNavigate }) {
         ))}
       </div>
 
-      {/* Progression philosophy */}
-      <div style={{margin:'12px 16px 0'}}>
-        <div className="alert alert-info" style={{marginBottom:0}}>
-          {Icons.info}
-          <div className="alert-text" style={{fontSize:11}}>Bloques 8 semanas · Solo 1-2 ejercicios suben por semana · No cambiar por aburrimiento</div>
-        </div>
-      </div>
 
       <div className="section-label">Ejercicios — Próxima sesión</div>
 
