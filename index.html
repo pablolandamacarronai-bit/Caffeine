@@ -28,7 +28,7 @@ window.APP_DATA = {
   },
 
   weekSchedule: {
-    0: [],
+    0: [{ type: "running", label: "Running", time: "tarde", color: "#f97316" }],
     1: [{ type: "leg", label: "Leg Day", time: "21:00", color: "#22c55e" }],
     2: [{ type: "tennis", label: "Tenis", time: "21:00", color: "#eab308" }],
     3: [
@@ -45,111 +45,44 @@ window.APP_DATA = {
 
   phases: {
     weights: [
-      { id: "fase1", name: "Fase 1 — Fuerza", start: "2026-02-18", end: "2026-04-14", status: "completed", repRange: "4x8", description: "Fuerza base. Bloques 8 semanas sin cambiar ejercicios." },
-      { id: "fase2", name: "Fase 2 — Hipertrofia", start: "2026-04-15", end: "2026-05-10", blockStart: "2026-03-16", repRange: "10-12", description: "Rango de reps sube a 10-12. Nuevos ejercicios incorporados." },
-      { id: "fase3", name: "Fase 3 — Mantenimiento", start: "2026-05-11", end: null, repRange: "compuestos", description: "Pesas 2x semana. Running toma protagonismo. Prep media maratón." }
+      { id: "bloque1", name: "Bloque 1", start: "2026-02-18", end: "2026-05-17", status: "completed", repRange: "8-12", description: "Fuerza e hipertrofia. Consolidación de ejercicios base." },
+      { id: "bloque2", name: "Bloque 2", start: "2026-05-18", end: null, repRange: "10-12", description: "Nuevo ciclo. Ejercicios actualizados según entrenador." },
     ],
     running: [
-      { id: "rFase1", name: "Fase 1 — Base Building", start: "2026-03-18", end: "2026-05-10", blockStart: "2026-03-16", description: "Ritmo conversacional. 2 sesiones/semana. 20-35 min.", paceTarget: { flat: "5:50-6:10", hills: "6:20-6:40" } },
-      { id: "rFase2", name: "Fase 2 — Desarrollo Aeróbico", start: "2026-05-11", end: "2026-07-07", description: "30-45 min. Tirada larga dominical. 1 sesión series cada 2 semanas." },
-      { id: "rFase3", name: "Fase 3 — Específica Media Maratón", start: "2026-07-08", end: "2026-09-29", status: "upcoming", description: "3 días/semana. Tirada larga 16-18km. Series calidad 1x semana." }
+      { id: "rFase1", name: "Fase 1 — Base", start: "2026-03-18", end: "2026-05-17", status: "completed", description: "Ritmo conversacional. 2 sesiones/semana. 20-35 min." },
+      { id: "rFase2", name: "Fase 2 — Volumen", start: "2026-05-18", end: null, description: "30-35 min suave. Miércoles mañana + Domingo tarde." },
     ]
   },
 
   exercises: {
     fase2: {
       pull: [
-        { id: "remo_barra_t", name: "Remo barra T", series: 4, reps: 10, weight: 32.5, increment: 2.5, notes: "Escápulas antes de tirar, pausa 1s contracción" },
-        { id: "jalon_agarre_neutro", name: "Jalón agarre abierto", series: 4, reps: 10, weight: 52.5, increment: 2.5, notes: "Depresión escapular antes, brazos = ganchos" },
-        { id: "pullover_polea_alta", name: "Pullover polea alta", series: 3, reps: 12, weight: 17.5, increment: 2.5, notes: "Foco en estiramiento dorsal" },
-        { id: "jalon_unilateral_polea", name: "Jalón unilateral polea", series: 3, reps: 10, weight: 20, increment: 2.5, notes: "Hombro abajo-atrás antes de mover brazo" },
-        { id: "deltoides_posterior", name: "Deltoide posterior máquina", series: 4, reps: 10, weight: 40, increment: 2.5, notes: "Frecuencia 2 — aquí va todo el volumen" },
-        { id: "rear_delt_row", name: "Rear delt row machine", series: 3, reps: 10, weight: 40, increment: 2.5, notes: "" },
+        { id: "remo_barra_t", name: "Remo barra T", series: 4, reps: 10, weight: 0, increment: 2.5, notes: "Escápulas antes de tirar, pausa 1s contracción" },
+        { id: "jalon_agarre_neutro", name: "Jalón agarre abierto", series: 4, reps: 10, weight: 0, increment: 2.5, notes: "Depresión escapular antes, brazos = ganchos" },
+        { id: "pullover_polea_alta", name: "Pullover polea alta", series: 3, reps: 12, weight: 0, increment: 2.5, notes: "Foco en estiramiento dorsal" },
+        { id: "jalon_unilateral_polea", name: "Jalón unilateral — de rodillas", series: 3, reps: 10, weight: 0, increment: 2.5, notes: "Hombro abajo-atrás antes de mover brazo" },
+        { id: "deltoides_posterior", name: "Deltoide posterior máquina", series: 4, reps: 10, weight: 0, increment: 2.5, notes: "" },
+        { id: "rear_delt_row", name: "Rear delt row machine", series: 3, reps: 10, weight: 0, increment: 2.5, notes: "" },
       ],
       push: [
-        { id: "press_inclinado_mancuernas", name: "Press inclinado mancuernas", series: 4, reps: 10, weight: 20, increment: 2, notes: "Codos 45°, bajada controlada" },
-        { id: "press_hombro_mancuernas", name: "Press hombro mancuernas", series: 4, reps: 10, weight: 14, increment: 2, notes: "Sin arquear espalda baja" },
-        { id: "press_pecho_maquina_a", name: "Press pecho Máquina A (recta)", series: 4, reps: 12, weight: 20, increment: 2.5, notes: "Movimiento recto, fase excéntrica controlada" },
-        { id: "elevaciones_laterales_polea", name: "Elevaciones laterales polea", series: 4, reps: 12, weight: 5, increment: 2.5, notes: "Codo ligeramente flexionado, hasta altura hombro" },
-        { id: "apertura_pecho_maquina", name: "Apertura en pecho en máquina", series: 3, reps: 12, weight: 15, increment: 2.5, notes: "Fase excéntrica controlada, pecho activo en todo el recorrido" }
+        { id: "press_inclinado_mancuernas", name: "Press inclinado mancuernas", series: 4, reps: 10, weight: 0, increment: 2, notes: "Codos 45°, bajada controlada" },
+        { id: "press_hombro_mancuernas", name: "Press hombro mancuernas", series: 4, reps: 10, weight: 0, increment: 2, notes: "Sin arquear espalda baja" },
+        { id: "press_pecho_maquina_a", name: "Press pecho Máquina A", series: 4, reps: 12, weight: 0, increment: 2.5, notes: "Movimiento recto, fase excéntrica controlada" },
+        { id: "elevaciones_laterales_polea", name: "Elevaciones laterales polea", series: 4, reps: 12, weight: 0, increment: 2.5, notes: "Codo ligeramente flexionado, hasta altura hombro" },
+        { id: "apertura_pecho_maquina", name: "Apertura pecho máquina", series: 3, reps: 12, weight: 0, increment: 2.5, notes: "Fase excéntrica controlada" },
       ],
       leg: [
-        { id: "prensa_inclinada", name: "Prensa inclinada", series: 4, reps: 10, weight: 60, increment: 2.5, notes: "Rodillas alineadas, bajada controlada" },
-        { id: "rdl_mancuernas", name: "RDL mancuernas", series: 4, reps: 10, weight: 26, increment: 2, notes: "Bisagra cadera pura — NO sentadilla" },
-        { id: "extension_cuadriceps", name: "Extensión cuádriceps", series: 4, reps: 12, weight: 55, increment: 2.5, notes: "" },
-        { id: "femoral_tumbado", name: "Femoral tumbado", series: 3, reps: 12, weight: 45, increment: 2.5, notes: "Pausa 1s contracción máxima" },
-        { id: "abductores", name: "Abductores", series: 3, reps: 12, weight: 47.5, increment: 2.5, notes: "Sin rebote al volver" },
-        { id: "core", name: "Core (plancha + hollow rocks)", series: 3, reps: 0, weight: 0, increment: 0, isCore: true, notes: "Plancha 3x45s + Hollow rocks 3x12. Al final, siempre." }
+        { id: "prensa_inclinada", name: "Prensa inclinada", series: 4, reps: 10, weight: 0, increment: 2.5, notes: "Rodillas alineadas, bajada controlada" },
+        { id: "rdl_mancuernas", name: "RDL mancuernas", series: 4, reps: 10, weight: 0, increment: 2, notes: "Bisagra cadera pura — NO sentadilla" },
+        { id: "extension_cuadriceps", name: "Extensión cuádriceps", series: 4, reps: 12, weight: 0, increment: 2.5, notes: "" },
+        { id: "femoral_tumbado", name: "Femoral tumbado", series: 3, reps: 12, weight: 0, increment: 2.5, notes: "Pausa 1s contracción máxima" },
+        { id: "abductores", name: "Abductores", series: 3, reps: 12, weight: 0, increment: 2.5, notes: "" },
+        { id: "core", name: "Core — Plancha + Hollow rocks", series: 3, reps: 0, weight: 0, increment: 0, isCore: true, notes: "Plancha 3×45s + Hollow rocks 3×12. Al final." },
       ]
     }
   },
 
-  progressionData: {
-    remo_barra_t: [
-      { date: "2026-02-18", week: 1, weight: 27.5, series: 4, reps: 8 },
-      { date: "2026-03-18", week: 5, weight: 30, series: 4, reps: 8 },
-      { date: "2026-04-01", week: 7, weight: 35, series: 4, reps: 8 },
-    ],
-    jalon_agarre_neutro: [
-      { date: "2026-02-18", week: 1, weight: 52.5, series: 4, reps: 8, note: "mix 55+52.5" },
-      { date: "2026-03-18", week: 5, weight: 50, series: 4, reps: 8 },
-      { date: "2026-03-25", week: 6, weight: 52.5, series: 4, reps: 8 },
-      { date: "2026-04-08", week: 8, weight: 55, series: 4, reps: 8 },
-    ],
-    prensa_inclinada: [
-      { date: "2026-02-16", week: 1, weight: 52.5, series: 4, reps: 8 },
-      { date: "2026-03-16", week: 5, weight: 55, series: 4, reps: 8 },
-      { date: "2026-03-23", week: 6, weight: 57.5, series: 4, reps: 8 },
-      { date: "2026-03-30", week: 7, weight: 60, series: 4, reps: 8 },
-      { date: "2026-04-06", week: 8, weight: 62.5, series: 4, reps: 8 },
-    ],
-    press_inclinado_mancuernas: [
-      { date: "2026-02-20", week: 1, weight: 18, series: 4, reps: 8 },
-      { date: "2026-03-27", week: 6, weight: 20, series: 4, reps: 8 },
-    ],
-    rdl_mancuernas: [
-      { date: "2026-02-16", week: 1, weight: 24, series: 4, reps: 8 },
-      { date: "2026-04-06", week: 7, weight: 26, series: 4, reps: 8 },
-    ],
-    extension_cuadriceps: [
-      { date: "2026-02-16", week: 1, weight: 50, series: 4, reps: 10 },
-      { date: "2026-03-16", week: 5, weight: 52.5, series: 4, reps: 10 },
-      { date: "2026-03-30", week: 7, weight: 55, series: 4, reps: 10 },
-      { date: "2026-04-06", week: 8, weight: 57.5, series: 4, reps: 10 },
-    ],
-    femoral_tumbado: [
-      { date: "2026-02-16", week: 1, weight: 42.5, series: 3, reps: 12 },
-      { date: "2026-03-16", week: 5, weight: 45, series: 3, reps: 12 },
-      { date: "2026-04-06", week: 7, weight: 47.5, series: 3, reps: 12 },
-    ],
-    abductores: [
-      { date: "2026-02-16", week: 1, weight: 42.5, series: 3, reps: 12 },
-      { date: "2026-03-16", week: 5, weight: 45, series: 3, reps: 12 },
-      { date: "2026-04-06", week: 7, weight: 47.5, series: 3, reps: 12 },
-    ],
-    rear_delt_row: [
-      { date: "2026-02-18", week: 1, weight: 35, series: 3, reps: 10 },
-      { date: "2026-03-25", week: 6, weight: 37.5, series: 3, reps: 10 },
-      { date: "2026-04-01", week: 7, weight: 40, series: 3, reps: 10 },
-    ],
-    deltoides_posterior: [
-      { date: "2026-02-20", week: 1, weight: 42.5, series: 3, reps: 10 },
-      { date: "2026-03-11", week: 4, weight: 40, series: 3, reps: 10, note: "bajado por llegar al fallo" },
-      { date: "2026-04-08", week: 8, weight: 42.5, series: 3, reps: 10 },
-    ],
-    elevaciones_laterales_polea: [
-      { date: "2026-02-20", week: 1, weight: 6, series: 4, reps: 8 },
-      { date: "2026-02-27", week: 2, weight: 5, series: 4, reps: 10, note: "salto 5→7.5 en máquina" },
-    ],
-    press_hombro_mancuernas: [
-      { date: "2026-02-20", week: 1, weight: 16, series: 4, reps: 8 },
-      { date: "2026-03-06", week: 3, weight: 14, series: 4, reps: 8, note: "bajado por dificultad" },
-    ],
-    press_pecho_maquina_a: [
-      { date: "2026-02-20", week: 1, weight: 17.5, series: 4, reps: 10 },
-      { date: "2026-03-11", week: 4, weight: 20, series: 4, reps: 10 },
-    ],
-  },
+  progressionData: {},
 
   runningSessions: [
     { id: "r1", date: "2026-03-18", distance: 3.25, time: 1340, pace: "6:52", elevation: 48, location: "Madrid (El Pilar)", type: "easy", notes: "Primera sesión estructurada" },
@@ -172,7 +105,7 @@ window.APP_DATA = {
 
   weightSessions: [
     {
-      id: "w1", date: "2026-04-15", type: "pull", phase: "fase2",
+      id: "w1", date: "2026-04-15", type: "pull", phase: "bloque1",
       exercises: [
         { id: "remo_barra_t", sets: [{ reps: 10, weight: 32.5 }, { reps: 10, weight: 32.5 }, { reps: 9, weight: 32.5 }, { reps: 9, weight: 32.5 }] },
         { id: "jalon_agarre_neutro", sets: [{ reps: 10, weight: 52.5 }, { reps: 10, weight: 52.5 }, { reps: 10, weight: 52.5 }, { reps: 9, weight: 52.5 }] },
@@ -284,16 +217,12 @@ window.TrainingDB = {
     const result = [];
     sessions.forEach(s => {
       const ex = s.exercises && s.exercises.find(e => e.id === exerciseId);
-      if (ex) {
-        const maxWeight = Math.max(...ex.sets.map(set => set.weight));
+      if (ex && ex.sets && ex.sets.length > 0) {
+        const weights = ex.sets.map(set => Number(set.weight) || 0).filter(w => w > 0);
+        if (weights.length === 0) return;
+        const maxWeight = Math.max(...weights);
         const avgReps = ex.sets.reduce((a, b) => a + b.reps, 0) / ex.sets.length;
         result.push({ date: s.date, weight: maxWeight, reps: Math.round(avgReps), type: s.type });
-      }
-    });
-    const phase1 = APP_DATA.progressionData[exerciseId] || [];
-    phase1.forEach(p => {
-      if (!result.find(r => r.date === p.date)) {
-        result.push({ date: p.date, weight: p.weight, reps: p.reps, type: 'fase1', note: p.note });
       }
     });
     return result.sort((a,b) => a.date.localeCompare(b.date));
@@ -819,12 +748,23 @@ function weeksElapsed(dateStr) {
   const diff = new Date() - new Date(dateStr);
   return Math.max(0, Math.floor(diff / (7 * 24 * 3600 * 1000)));
 }
+function getExName(id) {
+  for (const type of ['pull', 'push', 'leg']) {
+    const found = (D.exercises.fase2[type] || []).find(e => e.id === id);
+    if (found) return found.name;
+  }
+  return id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
 function getActiveWeightsPhase() {
+  const forced = DB.load('forcedWeightsPhase', null);
+  if (forced) return D.phases.weights.find(p => p.id === forced) || D.phases.weights[D.phases.weights.length - 1];
   const today = isoDate(new Date());
   return D.phases.weights.find(p => p.start <= today && (!p.end || today <= p.end))
     || D.phases.weights[D.phases.weights.length - 1];
 }
 function getActiveRunPhase() {
+  const forced = DB.load('forcedRunPhase', null);
+  if (forced) return D.phases.running.find(p => p.id === forced) || D.phases.running[D.phases.running.length - 1];
   const today = isoDate(new Date());
   return D.phases.running.find(p => p.start <= today && (!p.end || today <= p.end))
     || D.phases.running[D.phases.running.length - 1];
@@ -858,6 +798,7 @@ const Icons = {
   fire: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c3.5 0 7-1.5 7-6 0-2.5-1.5-5-4-7-1 2-3 3-3 3s-3-2.5-1-6C8 7 5 9.5 5 14c0 4.5 3.5 8 7 8z"/></svg>,
   pr: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
   coach: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>,
+  calendar: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
 };
 
 // ---- MINI CHART ----
@@ -934,12 +875,12 @@ function CoachDashboard() {
       const mins = Math.floor(selected.time / 60), secs = selected.time % 60;
       return `[Running — ${selected.date}]\nDistancia: ${selected.distance}km  Ritmo: ${selected.pace}/km\nTiempo: ${mins}min${secs > 0 ? ' ' + secs + 's' : ''}\nDesnivel: +${selected.elevation}m  Lugar: ${selected.location || '-'}\nNotas: ${selected.notes || '-'}`;
     }
-    const defs = D.exercises.fase2[selected.type] || [];
     let txt = `[${selected.type.toUpperCase()} DAY — ${selected.date}]\n`;
     (selected.exercises || []).forEach(ex => {
-      const def = defs.find(e => e.id === ex.id);
-      const name = def?.name || ex.id;
+      const name = getExName(ex.id);
       const sets = (ex.sets || []).map(st => `${st.reps}×${st.weight}kg`).join(' / ');
+      if (!sets) return;
+      const def = Object.values(D.exercises.fase2).flat().find(e => e.id === ex.id);
       const hit = def && !def.isCore && (ex.sets || []).every(st => st.reps >= (def.reps || 10));
       txt += `  ${name}: ${sets}${hit ? ' ✅' : ''}\n`;
     });
@@ -1010,8 +951,8 @@ function Dashboard({ onNavigate }) {
   const activePh = getActiveWeightsPhase();
   const runPh = getActiveRunPhase();
   const totalWeeks = 8;
-  const elapsed = activePh?.blockStart ? weeksElapsed(activePh.blockStart) : weeksElapsed(activePh?.start || '2026-04-15');
-  const runElapsed = runPh?.blockStart ? weeksElapsed(runPh.blockStart) : weeksElapsed(runPh?.start || '2026-03-18');
+  const elapsed = weeksElapsed(activePh?.start || '2026-05-18');
+  const runElapsed = weeksElapsed(runPh?.start || '2026-05-18');
   const pct = Math.min(1, elapsed / totalWeeks);
   const next = getNextSession();
 
@@ -1076,7 +1017,7 @@ function Dashboard({ onNavigate }) {
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8}}>
             <div>
               <div style={{fontSize:12, color:'var(--muted)', fontWeight:500}}>💪 Pesas</div>
-              <div style={{fontSize:14, fontWeight:700, marginTop:2}}>{activePh?.name.replace('Fase 2 — ','')}</div>
+              <div style={{fontSize:14, fontWeight:700, marginTop:2}}>{activePh?.name}</div>
             </div>
             <Ring pct={pct} color="var(--push)" size={44} stroke={4}>
               <span style={{fontSize:10, fontWeight:700, color:'var(--push)'}}>{elapsed}w</span>
@@ -1087,14 +1028,14 @@ function Dashboard({ onNavigate }) {
           </div>
           <div style={{display:'flex', justifyContent:'space-between', marginTop:5}}>
             <span style={{fontSize:10, color:'var(--muted)'}}>Sem {elapsed}/{totalWeeks}</span>
-            <span style={{fontSize:10, color:'var(--muted)'}}>{weeksUntil(activePh?.end)} sem restantes</span>
+            {activePh?.end ? <span style={{fontSize:10, color:'var(--muted)'}}>{weeksUntil(activePh.end)} sem restantes</span> : <span style={{fontSize:10, color:'var(--muted)'}}>En curso</span>}
           </div>
         </div>
         <div className="card" style={{flex:1, margin:0, padding:14}}>
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8}}>
             <div>
               <div style={{fontSize:12, color:'var(--muted)', fontWeight:500}}>🏃 Running</div>
-              <div style={{fontSize:14, fontWeight:700, marginTop:2}}>{runPh?.name.split(' — ')[1]}</div>
+              <div style={{fontSize:14, fontWeight:700, marginTop:2}}>{runPh?.name.split(' — ')[1] || runPh?.name}</div>
             </div>
             <Ring pct={Math.min(1, runElapsed / 8)} color="var(--running)" size={44} stroke={4}>
               <span style={{fontSize:10, fontWeight:700, color:'var(--running)'}}>{runElapsed}w</span>
@@ -1139,25 +1080,6 @@ function Dashboard({ onNavigate }) {
             </div>
           );
         })}
-      </div>
-
-      {/* Calendar sync */}
-      <div style={{margin:'6px 16px 0', display:'flex', gap:8, alignItems:'center', padding:'10px 14px',
-        background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)'}}>
-        <span style={{fontSize:18, flexShrink:0}}>📅</span>
-        <div style={{flex:1, minWidth:0}}>
-          <div style={{fontSize:13, fontWeight:600}}>Sincronizar con Calendario</div>
-          <div style={{fontSize:11, color:'var(--muted)', marginTop:2, lineHeight:1.4}}>
-            Crea "☕ Caffeine" en tu app Calendario.
-            Para eliminar: Calendarios → ☕ Caffeine → Eliminar.
-          </div>
-        </div>
-        <a href="webcal://pablolandamacarronai-bit.github.io/Caffeine/training.ics"
-          style={{flexShrink:0, padding:'7px 13px', borderRadius:'var(--radius-sm)',
-            background:'var(--accent)', color:'#fff', fontSize:12, fontWeight:700,
-            textDecoration:'none', whiteSpace:'nowrap'}}>
-          Añadir
-        </a>
       </div>
 
       {/* Today */}
@@ -1247,10 +1169,9 @@ function SessionScreen({ params, onNavigate, onBack }) {
   const exList = D.exercises.fase2[type] || [];
   const lastSession = DB.getLastSession(type);
   const [sets, setSets] = useState(() => {
-    // init from plan
     return exList.map(ex => ({
       id: ex.id,
-      sets: Array.from({length: ex.series}, () => ({ reps: ex.reps || 0, weight: ex.weight, done: false })),
+      sets: Array.from({length: ex.series}, () => ({ reps: ex.reps || 0, weight: '', done: false })),
       notes: ''
     }));
   });
@@ -1282,13 +1203,13 @@ function SessionScreen({ params, onNavigate, onBack }) {
     const cur = sets[exIdx];
     const prev = getLastExData(cur.id);
     if (!prev) return null;
-    const curMax = Math.max(...cur.sets.map(s => s.weight));
-    const prevMax = Math.max(...prev.sets.map(s => s.weight));
+    const curMax = Math.max(...cur.sets.map(s => Number(s.weight) || 0));
+    const prevMax = Math.max(...prev.sets.map(s => Number(s.weight) || 0));
     const curReps = cur.sets.reduce((a,b) => a + (b.reps||0), 0);
     const prevReps = prev.sets.reduce((a,b) => a + (b.reps||0), 0);
-    if (curMax > prevMax) return 'up';
+    if (curMax > 0 && curMax > prevMax) return 'up';
     if (curReps > prevReps) return 'reps-up';
-    if (curMax < prevMax) return 'down';
+    if (curMax > 0 && curMax < prevMax) return 'down';
     return 'same';
   }
 
@@ -1297,7 +1218,7 @@ function SessionScreen({ params, onNavigate, onBack }) {
       id: `w${Date.now()}`,
       date: isoDate(new Date()),
       type,
-      phase: 'fase2',
+      phase: getActiveWeightsPhase()?.id || 'bloque2',
       exercises: sets.map(ex => ({
         id: ex.id,
         sets: ex.sets.map(s => ({ reps: Number(s.reps), weight: Number(s.weight) }))
@@ -1331,14 +1252,6 @@ function SessionScreen({ params, onNavigate, onBack }) {
         <span className={`badge badge-${type}`} style={{fontSize:11}}>{isoDate(new Date()).slice(5)}</span>
       </div>
 
-      {/* Phase reminder */}
-      <div style={{margin:'10px 16px 0'}}>
-        <div className="alert alert-info" style={{marginBottom:0}}>
-          {Icons.info}
-          <div className="alert-text">Fase 2 — Hipertrofia · Reps objetivo: 10-12 · Técnica prioritaria sobre peso</div>
-        </div>
-      </div>
-
       {exList.map((ex, exIdx) => {
         const status = getStatus(exIdx);
         const isOpen = activeEx === exIdx;
@@ -1356,7 +1269,7 @@ function SessionScreen({ params, onNavigate, onBack }) {
                   {ex.isCore && <span className="tag tag-new">Core</span>}
                 </div>
                 <div style={{fontSize:11, color:'var(--muted)', marginTop:2}}>
-                  {ex.isCore ? ex.notes : `${ex.series}×${ex.reps || '15'} · ${ex.weight > 0 ? ex.weight + 'kg' : 'Peso corporal'}`}
+                  {ex.isCore ? ex.notes : `${ex.series}×${ex.reps || '15'} reps`}
                 </div>
               </div>
               <div style={{display:'flex', alignItems:'center', gap:8, flexShrink:0}}>
@@ -1434,9 +1347,10 @@ function SessionScreen({ params, onNavigate, onBack }) {
                     const prev = getLastExData(ex.id);
                     const allFullReps = prev.sets.every(s => s.reps >= (ex.reps || 10));
                     if (allFullReps && !ex.isCore) {
+                      const prevMax = Math.max(...prev.sets.map(s => Number(s.weight) || 0));
                       return (
                         <div style={{marginTop:8, padding:'8px 10px', borderRadius:8, background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', fontSize:12, color:'#4ade80'}}>
-                          💡 Anterior: todas las series al objetivo. Considera +{ex.increment}kg hoy.
+                          💡 Anterior al objetivo{prevMax > 0 ? ` (${prevMax}kg)` : ''}. Considera +{ex.increment}kg hoy.
                         </div>
                       );
                     }
@@ -1527,7 +1441,7 @@ function RunLogScreen({ onBack }) {
             {(() => {
               const [m,s] = pace.split(':').map(Number);
               const total = m*60+s;
-              if (total <= 370) return <span style={{color:'#f87171'}}>⚠️ Demasiado rápido para Fase 1</span>;
+              if (total <= 370) return <span style={{color:'#f87171'}}>⚠️ Demasiado rápido — zona conversacional</span>;
               if (total <= 410) return <span style={{color:'var(--running)'}}>✅ Ritmo ideal (zona conversacional)</span>;
               return <span style={{color:'var(--muted2)'}}>Ritmo suave</span>;
             })()}
@@ -1843,7 +1757,9 @@ function ProgressionScreen() {
 // ====================================================
 function PlanScreen({ onNavigate }) {
   const [selected, setSelected] = useState('pull');
+  const [, setForcePhase] = useState(0);
   const activePh = getActiveWeightsPhase();
+  const activeRunPh = getActiveRunPhase();
   const exList = D.exercises.fase2[selected] || [];
   const lastSession = DB.getLastSession(selected);
 
@@ -1852,17 +1768,49 @@ function PlanScreen({ onNavigate }) {
     const prev = lastSession.exercises?.find(e => e.id === ex.id);
     if (!prev) return null;
     const allGood = prev.sets.every(s => s.reps >= (ex.reps || 10));
-    if (allGood) return { weight: ex.weight + ex.increment, suggestion: 'Subir peso', color: 'var(--leg)' };
     const anyFail = prev.sets.some(s => s.reps < (ex.reps || 10) - 2);
-    if (anyFail) return { weight: ex.weight, suggestion: 'Mantener peso', color: 'var(--tennis)' };
-    return { weight: ex.weight, suggestion: 'Consolidar', color: 'var(--muted2)' };
+    const prevMax = Math.max(...prev.sets.map(s => Number(s.weight) || 0));
+    if (allGood) return { prevWeight: prevMax, suggestion: `Sube +${ex.increment}kg`, color: 'var(--leg)' };
+    if (anyFail) return { prevWeight: prevMax, suggestion: 'Mantener peso', color: 'var(--tennis)' };
+    return { prevWeight: prevMax, suggestion: 'Consolidar', color: 'var(--muted2)' };
   }
 
   return (
     <div className="screen">
       <div className="page-header">
-        <div className="page-title">Plan</div>
-        <div style={{fontSize:12, color:'var(--accent)', fontWeight:600}}>{activePh?.name.split(' — ')[1]}</div>
+        <div className="page-title">Sesión</div>
+        <div style={{fontSize:12, color:'var(--accent)', fontWeight:600}}>{activePh?.name}</div>
+      </div>
+
+      {/* Phase selector */}
+      <div style={{margin:'0 16px 8px', padding:'12px 14px', background:'var(--surface)', borderRadius:'var(--radius)', border:'1px solid var(--border)'}}>
+        <div style={{fontSize:10, fontWeight:600, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:10}}>Fase actual (según tu entrenador)</div>
+        <div style={{marginBottom:8}}>
+          <div style={{fontSize:11, color:'var(--muted)', marginBottom:5}}>💪 Pesas</div>
+          <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+            {D.phases.weights.map(p => (
+              <button key={p.id} onClick={() => { DB.save('forcedWeightsPhase', p.id); setForcePhase(n => n+1); }}
+                style={{padding:'5px 12px', borderRadius:8, border:`1px solid ${activePh.id===p.id?'var(--accent)':'var(--border)'}`,
+                  background:activePh.id===p.id?'rgba(249,115,22,0.15)':'var(--surface2)',
+                  color:activePh.id===p.id?'var(--accent)':'var(--muted)', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div style={{fontSize:11, color:'var(--muted)', marginBottom:5}}>🏃 Running</div>
+          <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+            {D.phases.running.map(p => (
+              <button key={p.id} onClick={() => { DB.save('forcedRunPhase', p.id); setForcePhase(n => n+1); }}
+                style={{padding:'5px 12px', borderRadius:8, border:`1px solid ${activeRunPh.id===p.id?'var(--accent)':'var(--border)'}`,
+                  background:activeRunPh.id===p.id?'rgba(249,115,22,0.15)':'var(--surface2)',
+                  color:activeRunPh.id===p.id?'var(--accent)':'var(--muted)', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Day selector */}
@@ -1876,7 +1824,6 @@ function PlanScreen({ onNavigate }) {
         ))}
       </div>
 
-
       <div className="section-label">Ejercicios — Próxima sesión</div>
 
       {exList.map((ex, i) => {
@@ -1889,7 +1836,6 @@ function PlanScreen({ onNavigate }) {
                 <div style={{display:'flex', alignItems:'center', gap:6, flexWrap:'wrap'}}>
                   <span style={{fontSize:14, fontWeight:700}}>{ex.name}</span>
                   {ex.isCore && <span className="tag tag-new">Core</span>}
-                  {i >= exList.length - 2 && !ex.isCore && <span className="tag tag-new">NUEVO</span>}
                 </div>
                 <div style={{fontSize:12, color:'var(--muted)', marginTop:3}}>
                   {ex.isCore ? '3×45s plancha + 3×12 hollow rocks' : `${ex.series} series × ${ex.reps || 15} reps`}
@@ -1897,14 +1843,10 @@ function PlanScreen({ onNavigate }) {
                 {ex.notes && <div style={{fontSize:11, color:'var(--muted2)', marginTop:4, fontStyle:'italic'}}>{ex.notes}</div>}
               </div>
               <div style={{textAlign:'right', flexShrink:0}}>
-                {!ex.isCore && (
+                {!ex.isCore && suggestion && (
                   <>
-                    <div style={{fontFamily:'var(--font-mono)', fontSize:18, fontWeight:700}}>
-                      {suggestion ? suggestion.weight : ex.weight}{ex.weight > 0 ? 'kg' : ''}
-                    </div>
-                    {suggestion && (
-                      <div style={{fontSize:10, fontWeight:600, color:suggestion.color, marginTop:2}}>{suggestion.suggestion}</div>
-                    )}
+                    {suggestion.prevWeight > 0 && <div style={{fontFamily:'var(--font-mono)', fontSize:15, fontWeight:700}}>{suggestion.prevWeight}kg</div>}
+                    <div style={{fontSize:11, fontWeight:600, color:suggestion.color, marginTop:2}}>{suggestion.suggestion}</div>
                   </>
                 )}
               </div>
@@ -1931,7 +1873,6 @@ function generateReport() {
   const ts = DB.getTennisSessions().sort((a, b) => b.date.localeCompare(a.date));
   const ap = getActiveWeightsPhase();
   const rp = getActiveRunPhase();
-  const tw = ap ? Math.round((new Date(ap.end) - new Date(ap.start)) / (7 * 24 * 3600 * 1000)) : 8;
   const streak = DB.getRunStreak();
 
   let r = `=== INFORME DE ENTRENAMIENTO — Pablo ===
@@ -1942,55 +1883,72 @@ OBJETIVO: Reducir grasa abdominal + masa muscular + fuerza progresiva.
 META: Media maratón — octubre 2026.
 
 FASES ACTIVAS
-• Pesas: ${ap?.name} — semana ${weeksElapsed(ap?.start)}/${tw}
-• Running: ${rp?.name}
-• Racha running: ${streak} semanas consecutivas
+• Pesas: ${ap?.name || '-'} (desde ${ap?.start || '-'}, sem ${weeksElapsed(ap?.start || '2026-05-18')})
+• Running: ${rp?.name || '-'} (desde ${rp?.start || '-'})
+• Racha running: ${streak} semanas
+
+HORARIO SEMANAL
+• Lunes: Leg Day 21:00
+• Martes: Tenis 21:00
+• Miércoles: Running mañana (30min) + Pull Day 21:00
+• Jueves: Push Day mañana + Tenis 21:00
+• Domingo: Running tarde (35min)
+
+EJERCICIOS BLOQUE ACTUAL
+• Leg: Prensa inclinada, RDL mancuernas, Ext. cuádriceps, Femoral tumbado, Abductores, Core
+• Pull: Remo barra T, Jalón agarre abierto, Pullover polea alta, Jalón unilateral-rodillas, Deltoides posterior, Rear delt row
+• Push: Press inclinado manc., Press hombro manc., Press pecho Máq.A, Elev. laterales polea, Apertura pecho máq.
 
 `;
 
-  r += `ÚLTIMAS SESIONES DE PESAS\n`;
-  ws.slice(0, 6).forEach(s => {
+  r += `HISTORIAL PESAS (últimas ${Math.min(ws.length, 10)} sesiones)\n`;
+  if (ws.length === 0) r += '  Sin sesiones registradas\n';
+  ws.slice(0, 10).forEach(s => {
     r += `\n[${s.date} — ${s.type.toUpperCase()} DAY]\n`;
     (s.exercises || []).forEach(ex => {
-      const def = (D.exercises.fase2[s.type] || []).find(e => e.id === ex.id);
-      const name = def?.name || ex.id;
+      const name = getExName(ex.id);
       const sets = (ex.sets || []).map(st => `${st.reps}×${st.weight}kg`).join(' / ');
+      if (!sets) return;
+      const def = Object.values(D.exercises.fase2).flat().find(e => e.id === ex.id);
       const hit = def && !def.isCore && (ex.sets || []).every(st => st.reps >= (def.reps || 10));
-      r += `  ${name}: ${sets}${hit ? ' ✅ objetivo' : ''}\n`;
+      r += `  ${name}: ${sets}${hit ? ' ✅' : ''}\n`;
     });
   });
 
-  r += `\nRUNNING RECIENTE\n`;
+  r += `\nRUNNING (${rs.length} sesiones totales)\n`;
   if (rs.length === 0) r += '  Sin sesiones registradas\n';
-  rs.slice(0, 5).forEach(s => {
-    r += `  ${s.date}: ${s.distance}km @ ${s.pace}/km +${s.elevation}m${s.notes ? ' — "' + s.notes + '"' : ''}\n`;
+  rs.slice(0, 8).forEach(s => {
+    const mins = Math.floor(s.time / 60);
+    r += `  ${s.date}: ${s.distance}km @ ${s.pace}/km ${mins}min +${s.elevation}m${s.notes ? ' — "' + s.notes + '"' : ''}\n`;
   });
 
-  r += `\nTENIS RECIENTE\n`;
+  r += `\nTENIS (${ts.length} sesiones)\n`;
   if (ts.length === 0) r += '  Sin sesiones registradas\n';
-  ts.slice(0, 3).forEach(s => {
+  ts.slice(0, 5).forEach(s => {
     r += `  ${s.date}: ${s.duration}min\n`;
   });
 
-  r += `\nPROGRESIÓN DESDE FASE 1\n`;
-  let progLines = 0;
-  Object.entries(D.progressionData).forEach(([id, data]) => {
-    if (data.length < 2 || progLines >= 8) return;
-    const name = Object.values(D.exercises.fase2).flat().find(e => e.id === id)?.name || id;
-    const first = data[0].weight;
-    const last = data[data.length - 1].weight;
-    const diff = (last - first).toFixed(1);
-    if (parseFloat(diff) !== 0) { r += `  ${name}: ${first}kg → ${last}kg (${parseFloat(diff) > 0 ? '+' : ''}${diff}kg)\n`; progLines++; }
+  r += `\nPROGRESIÓN POR EJERCICIO (desde sesiones reales)\n`;
+  const allExIds = new Set();
+  ws.forEach(s => (s.exercises || []).forEach(ex => allExIds.add(ex.id)));
+  let progAdded = 0;
+  allExIds.forEach(id => {
+    if (progAdded >= 8) return;
+    const history = DB.getExerciseHistory(id);
+    if (history.length < 2) return;
+    const first = history[0], last = history[history.length - 1];
+    const diff = (last.weight - first.weight).toFixed(1);
+    r += `  ${getExName(id)}: ${first.weight}kg (${first.date}) → ${last.weight}kg (${last.date}) (${parseFloat(diff) >= 0 ? '+' : ''}${diff}kg)\n`;
+    progAdded++;
   });
+  if (progAdded === 0) r += '  Sin datos suficientes — registra más sesiones\n';
 
-  r += `\nINSIGHTS ACTUALES\n`;
+  r += `\nINSIGHTS\n`;
   generateInsights().forEach(i => { r += `  ${i.icon} ${i.title}: ${i.text}\n`; });
 
-  r += `\nREGLAS DE PROGRESIÓN
-• Bloques 8 semanas sin cambiar ejercicios
-• Solo 1-2 ejercicios suben por semana — no subir hasta consolidar reps (10-12)
+  r += `\nNORMAS
+• No subir peso hasta completar todas las series al objetivo de reps
 • Técnica antes que peso
-• Running Fase 1: ritmo conversacional, nunca zona umbral
 • Push Day + Tenis mismo día: cuidar hombro anterior
 `;
 
@@ -2012,7 +1970,7 @@ function generateInsights() {
     const days = Math.floor((today - new Date(rs[0].date + 'T00:00:00')) / 86400000);
     if (days >= 8)
       ins.push({ icon: '⚠️', color: 'var(--push)', title: 'Running atrasado',
-        text: `Llevas ${days} días sin correr. Fase 1 requiere 2 sesiones/semana para construir la base aeróbica.` });
+        text: `Llevas ${days} días sin correr. El plan requiere 2 sesiones/semana (miércoles mañana + domingo tarde).` });
     else if (days <= 2)
       ins.push({ icon: '✅', color: 'var(--leg)', title: 'Running al día',
         text: `Última sesión hace ${days === 0 ? 'hoy' : days + 'd'} — ${rs[0].distance}km a ${rs[0].pace}/km. Buen ritmo.` });
@@ -2043,8 +2001,8 @@ function generateInsights() {
   if (ap) {
     const rem = weeksUntil(ap.end);
     if (rem <= 2 && rem > 0)
-      ins.push({ icon: '🔔', color: 'var(--tennis)', title: 'Fase terminando pronto',
-        text: `Quedan ${rem} semana${rem > 1 ? 's' : ''} de ${ap.name.split(' — ')[1]}. Piensa ya en qué ejercicios priorizar en Fase 3.` });
+      ins.push({ icon: '🔔', color: 'var(--tennis)', title: 'Bloque terminando pronto',
+        text: `Quedan ${rem} semana${rem > 1 ? 's' : ''} de ${ap.name}. Consulta con tu entrenador el siguiente bloque.` });
   }
 
   // Running pace trend
@@ -2107,17 +2065,17 @@ function CoachScreen() {
     const rs = DB.getRunSessions().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
     const ap = getActiveWeightsPhase();
     const rp = getActiveRunPhase();
-    const tw = ap ? Math.round((new Date(ap.end) - new Date(ap.start)) / (7 * 24 * 3600 * 1000)) : 8;
     return `Eres el entrenador personal de Pablo. Responde siempre en español. Sé directo, concreto y motivador.
 
 PERFIL: Pablo, 1.83m, ~80kg, nivel intermedio. Creatina 5g/día. Meta: media maratón octubre 2026.
 OBJETIVO: Reducir grasa abdominal + masa muscular moderada + fuerza progresiva.
 
-FASE PESAS ACTUAL: ${ap?.name} (semana ${weeksElapsed(ap?.start)}/${tw}). Rango objetivo: 10-12 reps.
-FASE RUNNING ACTUAL: ${rp?.name}. Plano: 5:50-6:10/km. Con desnivel: 6:20-6:40/km. Nunca zona umbral en Fase 1.
+PESAS: ${ap?.name} (sem ${weeksElapsed(ap?.start || '2026-05-18')} desde inicio). Rango: 10-12 reps.
+RUNNING: ${rp?.name}. Ritmo suave conversacional. Miércoles mañana 30min + Domingo tarde 35min.
 
-HORARIO: Lunes=Leg, Martes=Tenis, Miércoles=Running+Pull, Jueves=Push+Tenis, Viernes=Desc, Sábado=Desc, Domingo=Running.
-REGLAS: No subir peso hasta consolidar reps. Max 1-2 ejercicios suben/semana. Técnica > peso. Push+Tenis = cuidar hombro anterior.
+HORARIO: Lun=Leg Day (21h), Mar=Tenis (21h), Mié=Running mañana+Pull Day (21h), Jue=Push Day mañana+Tenis (21h), Sáb-Vie=Descanso, Dom=Running tarde.
+EJERCICIOS: Leg(Prensa inclinada,RDL manc,Ext cuáds,Femoral tumbado,Abductores,Core). Pull(Remo barra T,Jalón agarre abierto,Pullover polea alta,Jalón unilateral-rodillas,Deltoides posterior,Rear delt row). Push(Press inclinado manc,Press hombro manc,Press pecho Máq.A,Elev laterales polea,Apertura pecho máq).
+REGLAS: No subir peso hasta completar todas las series al objetivo de reps. Técnica > peso. Push+Tenis = cuidar hombro anterior.
 
 ÚLTIMAS SESIONES PESAS:
 ${ws.map(s => `${s.date} ${s.type.toUpperCase()}: ${(s.exercises || []).map(e => `${e.id}[${(e.sets || []).map(st => `${st.reps}×${st.weight}kg`).join(',')}]`).join(' | ')}`).join('\n')}
@@ -2306,6 +2264,234 @@ Responde en máximo 3-4 frases salvo que pidan análisis detallado. Usa los dato
 }
 
 // ====================================================
+// SCREEN: CALENDAR
+// ====================================================
+function CalendarScreen({ onNavigate }) {
+  const [view, setView] = useState('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState(null);
+  const today = new Date();
+  const todayIso = isoDate(today);
+  const weightSessions = DB.getAllSessions();
+  const runSessions = DB.getRunSessions();
+
+  const MONTH_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DAY_ABBR = ['L','M','X','J','V','S','D'];
+
+  function getDaySchedule(dateIso) {
+    const d = new Date(dateIso + 'T00:00:00');
+    const dow = d.getDay();
+    return D.weekSchedule[dow] || [];
+  }
+
+  function getDaySessions(dateIso) {
+    return {
+      weights: weightSessions.filter(s => s.date === dateIso),
+      running: runSessions.filter(s => s.date === dateIso)
+    };
+  }
+
+  function DayDetail({ dateIso }) {
+    const schedule = getDaySchedule(dateIso);
+    const sessions = getDaySessions(dateIso);
+    const d = new Date(dateIso + 'T00:00:00');
+    const dayName = d.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+    const workouts = schedule.filter(s => s.type !== 'rest');
+    return (
+      <div style={{margin:'6px 12px 8px', padding:'14px', background:'var(--surface)', borderRadius:'var(--radius)', border:'1px solid var(--border)'}}>
+        <div style={{fontSize:13, fontWeight:700, marginBottom:10, textTransform:'capitalize', color:'var(--accent)'}}>{dayName}</div>
+        {workouts.length > 0 ? (
+          <>
+            <div style={{fontSize:10, fontWeight:600, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:8}}>Planificado</div>
+            {workouts.map((s, i) => {
+              const done = sessions.weights.some(w => w.type === s.type) || (s.type === 'running' && sessions.running.length > 0);
+              const canGo = dateIso === todayIso && (s.type === 'pull' || s.type === 'push' || s.type === 'leg' || s.type === 'running');
+              return (
+                <div key={i} onClick={() => {
+                  if (!canGo) return;
+                  if (s.type === 'running') onNavigate('run-log');
+                  else onNavigate('session', { type: s.type });
+                }} style={{display:'flex', alignItems:'center', gap:10, padding:'8px 10px', borderRadius:8,
+                  background:`${s.color}12`, marginBottom:6, cursor: canGo ? 'pointer' : 'default'}}>
+                  <div style={{width:8, height:8, borderRadius:'50%', background:done?s.color:'transparent', border:`2px solid ${s.color}`, flexShrink:0}}/>
+                  <div style={{flex:1}}>
+                    <span style={{fontSize:13, fontWeight:600, color:s.color}}>{s.label}</span>
+                    {s.time && <span style={{fontSize:12, color:'var(--muted)', marginLeft:8}}>{s.time}</span>}
+                  </div>
+                  {done && <span style={{fontSize:12, color:'var(--leg)', fontWeight:700}}>✓ Hecho</span>}
+                  {!done && canGo && <span style={{fontSize:16, color:s.color}}>›</span>}
+                </div>
+              );
+            })}
+          </>
+        ) : (
+          <div style={{fontSize:13, color:'var(--muted)'}}>Día de descanso 🛌</div>
+        )}
+        {(sessions.weights.length > 0 || sessions.running.length > 0) && (
+          <>
+            <div style={{fontSize:10, fontWeight:600, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.06em', margin:'10px 0 6px'}}>Registrado</div>
+            {sessions.weights.map((s, i) => (
+              <div key={`w${i}`} style={{display:'flex', alignItems:'center', gap:8, padding:'6px 10px', borderRadius:8, background:'var(--surface2)', marginBottom:4}}>
+                <span style={{fontSize:14}}>{typeIcon(s.type)}</span>
+                <div>
+                  <div style={{fontSize:13, fontWeight:600}}>{typeLabel(s.type)} Day</div>
+                  <div style={{fontSize:11, color:'var(--muted)'}}>{s.exercises?.length} ejercicios</div>
+                </div>
+              </div>
+            ))}
+            {sessions.running.map((s, i) => (
+              <div key={`r${i}`} style={{display:'flex', alignItems:'center', gap:8, padding:'6px 10px', borderRadius:8, background:'var(--surface2)', marginBottom:4}}>
+                <span style={{fontSize:14}}>🏃</span>
+                <div>
+                  <div style={{fontSize:13, fontWeight:600}}>{s.distance}km @ {s.pace}/km</div>
+                  <div style={{fontSize:11, color:'var(--muted)'}}>+{s.elevation}m · {s.location || ''}</div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    );
+  }
+
+  function navBtn(label, onClick) {
+    return (
+      <button onClick={onClick} style={{width:32,height:32,borderRadius:8,border:'1px solid var(--border)',background:'var(--surface)',color:'var(--muted)',fontSize:20,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--font)',lineHeight:1}}>
+        {label}
+      </button>
+    );
+  }
+
+  function MonthView() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDow = (firstDay.getDay() + 6) % 7;
+    const cells = [];
+    for (let i = 0; i < startDow; i++) cells.push(null);
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      cells.push(`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);
+    }
+    return (
+      <>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 20px 8px'}}>
+          {navBtn('‹', () => { const d=new Date(currentDate); d.setMonth(d.getMonth()-1); setCurrentDate(d); setSelectedDay(null); })}
+          <div style={{fontSize:16,fontWeight:700}}>{MONTH_ES[month]} {year}</div>
+          {navBtn('›', () => { const d=new Date(currentDate); d.setMonth(d.getMonth()+1); setCurrentDate(d); setSelectedDay(null); })}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',padding:'0 12px 3px',gap:3}}>
+          {DAY_ABBR.map(d => <div key={d} style={{textAlign:'center',fontSize:9,fontWeight:600,color:'var(--muted)',padding:'2px 0'}}>{d}</div>)}
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',padding:'0 12px',gap:3}}>
+          {cells.map((dateStr, i) => {
+            if (!dateStr) return <div key={`e${i}`}/>;
+            const schedule = getDaySchedule(dateStr);
+            const sessions = getDaySessions(dateStr);
+            const isToday = dateStr === todayIso;
+            const isSelected = dateStr === selectedDay;
+            const workouts = schedule.filter(s => s.type !== 'rest');
+            return (
+              <div key={dateStr} onClick={() => setSelectedDay(selectedDay===dateStr ? null : dateStr)}
+                style={{borderRadius:8,padding:'4px 2px',textAlign:'center',cursor:'pointer',
+                  background:isSelected?'rgba(249,115,22,0.12)':isToday?'rgba(249,115,22,0.06)':'var(--surface)',
+                  border:`1px solid ${isSelected?'var(--accent)':isToday?'rgba(249,115,22,0.4)':'var(--border)'}`,minHeight:46}}>
+                <div style={{fontSize:11,fontWeight:isToday?700:500,color:isToday?'var(--accent)':'var(--text)',marginBottom:3}}>{new Date(dateStr+'T00:00:00').getDate()}</div>
+                <div style={{display:'flex',flexDirection:'column',gap:2,alignItems:'center'}}>
+                  {workouts.slice(0,2).map((s,si) => {
+                    const done = sessions.weights.some(w => w.type===s.type) || (s.type==='running' && sessions.running.length>0);
+                    return <div key={si} style={{width:5,height:5,borderRadius:'50%',background:done?s.color:'transparent',border:`1.5px solid ${s.color}`,opacity:done?1:0.65}}/>;
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {selectedDay && <DayDetail dateIso={selectedDay}/>}
+      </>
+    );
+  }
+
+  function WeekView() {
+    const mon = new Date(currentDate);
+    mon.setDate(currentDate.getDate() - ((currentDate.getDay() + 6) % 7));
+    const days = Array.from({length:7}, (_, i) => { const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+    const rangeStr = `${days[0].getDate()} ${days[0].toLocaleDateString('es-ES',{month:'short'})} — ${days[6].getDate()} ${days[6].toLocaleDateString('es-ES',{month:'short'})}`;
+    return (
+      <>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 20px 8px'}}>
+          {navBtn('‹', () => { const d=new Date(currentDate); d.setDate(d.getDate()-7); setCurrentDate(d); setSelectedDay(null); })}
+          <div style={{fontSize:14,fontWeight:600}}>{rangeStr}</div>
+          {navBtn('›', () => { const d=new Date(currentDate); d.setDate(d.getDate()+7); setCurrentDate(d); setSelectedDay(null); })}
+        </div>
+        {days.map((d, i) => {
+          const dateIso = isoDate(d);
+          const schedule = getDaySchedule(dateIso);
+          const sessions = getDaySessions(dateIso);
+          const isToday = dateIso === todayIso;
+          const isSelected = dateIso === selectedDay;
+          const workouts = schedule.filter(s => s.type !== 'rest');
+          return (
+            <div key={i}>
+              <div onClick={() => setSelectedDay(selectedDay===dateIso ? null : dateIso)}
+                style={{margin:'0 12px 4px',padding:'10px 14px',
+                  background:isSelected?'rgba(249,115,22,0.06)':'var(--surface)',
+                  borderRadius:'var(--radius)',
+                  border:`1px solid ${isSelected?'var(--accent)':isToday?'rgba(249,115,22,0.4)':'var(--border)'}`,
+                  borderLeft:`3px solid ${isToday?'var(--accent)':'var(--border)'}`,
+                  cursor:'pointer',display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:36,textAlign:'center',flexShrink:0}}>
+                  <div style={{fontSize:10,fontWeight:600,color:'var(--muted)',textTransform:'uppercase'}}>{DAY_ABBR[i]}</div>
+                  <div style={{fontSize:20,fontWeight:700,color:isToday?'var(--accent)':'var(--text)',lineHeight:1.3}}>{d.getDate()}</div>
+                </div>
+                <div style={{flex:1}}>
+                  {workouts.length > 0 ? workouts.map((s, si) => {
+                    const done = sessions.weights.some(w => w.type===s.type) || (s.type==='running' && sessions.running.length>0);
+                    return (
+                      <div key={si} style={{display:'flex',alignItems:'center',gap:6,marginBottom:si<workouts.length-1?3:0}}>
+                        <div style={{width:6,height:6,borderRadius:'50%',background:done?s.color:'transparent',border:`1.5px solid ${s.color}`,flexShrink:0}}/>
+                        <span style={{fontSize:13,fontWeight:600,color:done?s.color:`${s.color}99`}}>{s.label}</span>
+                        {s.time && <span style={{fontSize:11,color:'var(--muted)'}}>{s.time}</span>}
+                        {done && <span style={{fontSize:11,color:'var(--leg)',fontWeight:700,marginLeft:2}}>✓</span>}
+                      </div>
+                    );
+                  }) : <span style={{fontSize:13,color:'var(--muted)'}}>Descanso</span>}
+                  {(sessions.weights.length > 0 || sessions.running.length > 0) && (
+                    <div style={{fontSize:11,color:'var(--muted2)',marginTop:3}}>
+                      {sessions.weights.map(s => `${typeLabel(s.type)} registrado`).join(' · ')}
+                      {sessions.running.map(s => `${s.distance}km registrado`).join(' · ')}
+                    </div>
+                  )}
+                </div>
+                <span style={{color:'var(--muted)',fontSize:14,display:'block',transform:isSelected?'rotate(90deg)':'rotate(0)',transition:'transform 0.2s'}}>{Icons.chevLeft}</span>
+              </div>
+              {isSelected && <DayDetail dateIso={dateIso}/>}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+
+  return (
+    <div className="screen">
+      <div style={{padding:'20px 20px 0',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div className="page-title">Calendario</div>
+        <div style={{display:'flex',gap:6}}>
+          <button onClick={() => {setView('month');setSelectedDay(null);}}
+            style={{padding:'5px 14px',borderRadius:8,border:`1px solid ${view==='month'?'var(--accent)':'var(--border)'}`,background:view==='month'?'rgba(249,115,22,0.15)':'var(--surface)',color:view==='month'?'var(--accent)':'var(--muted)',fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'var(--font)'}}>Mes</button>
+          <button onClick={() => {setView('week');setSelectedDay(null);}}
+            style={{padding:'5px 14px',borderRadius:8,border:`1px solid ${view==='week'?'var(--accent)':'var(--border)'}`,background:view==='week'?'rgba(249,115,22,0.15)':'var(--surface)',color:view==='week'?'var(--accent)':'var(--muted)',fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'var(--font)'}}>Semana</button>
+        </div>
+      </div>
+      <div style={{height:12}}/>
+      {view === 'month' ? <MonthView/> : <WeekView/>}
+      <div style={{height:16}}/>
+    </div>
+  );
+}
+
+// ====================================================
 // MAIN APP — navigation
 // ====================================================
 function App() {
@@ -2346,7 +2532,7 @@ function App() {
   const tabs = [
     { id: 'home', label: 'Inicio', icon: Icons.home },
     { id: 'session', label: 'Sesión', icon: Icons.dumbbell },
-    { id: 'run', label: 'Running', icon: Icons.run },
+    { id: 'cal', label: 'Cal.', icon: Icons.calendar },
     { id: 'progress', label: 'Progres.', icon: Icons.chart },
     { id: 'history', label: 'Historial', icon: Icons.history },
   ];
@@ -2364,7 +2550,7 @@ function App() {
       <div key={tab} style={{position:'absolute', inset:0}}>
         {tab === 'home' && <Dashboard onNavigate={navigate}/>}
         {tab === 'session' && <PlanScreen onNavigate={navigate}/>}
-        {tab === 'run' && <RunLogScreen onBack={() => setTab('home')}/>}
+        {tab === 'cal' && <CalendarScreen onNavigate={navigate}/>}
         {tab === 'progress' && <ProgressionScreen/>}
         {tab === 'history' && <HistoryScreen onNavigate={navigate}/>}
       </div>
@@ -2376,7 +2562,6 @@ function App() {
     <div className="phone-shell">
       {/* App header */}
       <div className="app-header">
-        <span style={{fontSize:20}}>☕</span>
         <span>Caffeine</span>
       </div>
 
