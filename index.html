@@ -1169,11 +1169,18 @@ function SessionScreen({ params, onNavigate, onBack }) {
   const exList = D.exercises.fase2[type] || [];
   const lastSession = DB.getLastSession(type);
   const [sets, setSets] = useState(() => {
-    return exList.map(ex => ({
-      id: ex.id,
-      sets: Array.from({length: ex.series}, () => ({ reps: ex.reps || 0, weight: '', done: false })),
-      notes: ''
-    }));
+    return exList.map(ex => {
+      const lastEx = lastSession?.exercises?.find(e => e.id === ex.id);
+      return {
+        id: ex.id,
+        sets: Array.from({length: ex.series}, (_, i) => {
+          const lastSet = lastEx?.sets?.[i] ?? lastEx?.sets?.[0];
+          const lastWeight = lastSet ? (Number(lastSet.weight) || '') : '';
+          return { reps: ex.reps || 0, weight: lastWeight, done: false };
+        }),
+        notes: ''
+      };
+    });
   });
   const [activeEx, setActiveEx] = useState(null);
   const [saved, setSaved] = useState(false);
@@ -1782,40 +1789,31 @@ function PlanScreen({ onNavigate }) {
         <div style={{fontSize:12, color:'var(--accent)', fontWeight:600}}>{activePh?.name}</div>
       </div>
 
-      {/* Phase selector */}
-      <div style={{margin:'0 16px 8px', padding:'12px 14px', background:'var(--surface)', borderRadius:'var(--radius)', border:'1px solid var(--border)'}}>
-        <div style={{fontSize:10, fontWeight:600, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:10}}>Fase actual (según tu entrenador)</div>
-        <div style={{marginBottom:8}}>
-          <div style={{fontSize:11, color:'var(--muted)', marginBottom:5}}>💪 Pesas</div>
-          <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
-            {D.phases.weights.map(p => (
-              <button key={p.id} onClick={() => { DB.save('forcedWeightsPhase', p.id); setForcePhase(n => n+1); }}
-                style={{padding:'5px 12px', borderRadius:8, border:`1px solid ${activePh.id===p.id?'var(--accent)':'var(--border)'}`,
-                  background:activePh.id===p.id?'rgba(249,115,22,0.15)':'var(--surface2)',
-                  color:activePh.id===p.id?'var(--accent)':'var(--muted)', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>
-                {p.name}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div>
-          <div style={{fontSize:11, color:'var(--muted)', marginBottom:5}}>🏃 Running</div>
-          <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
-            {D.phases.running.map(p => (
-              <button key={p.id} onClick={() => { DB.save('forcedRunPhase', p.id); setForcePhase(n => n+1); }}
-                style={{padding:'5px 12px', borderRadius:8, border:`1px solid ${activeRunPh.id===p.id?'var(--accent)':'var(--border)'}`,
-                  background:activeRunPh.id===p.id?'rgba(249,115,22,0.15)':'var(--surface2)',
-                  color:activeRunPh.id===p.id?'var(--accent)':'var(--muted)', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>
-                {p.name}
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* Phase selector — compact */}
+      <div style={{display:'flex', gap:6, padding:'0 16px 10px', alignItems:'center', flexWrap:'wrap'}}>
+        <span style={{fontSize:11, color:'var(--muted)'}}>Fase:</span>
+        {D.phases.weights.map(p => (
+          <button key={p.id} onClick={() => { DB.save('forcedWeightsPhase', p.id); setForcePhase(n => n+1); }}
+            style={{padding:'3px 10px', borderRadius:20, border:`1px solid ${activePh.id===p.id?'var(--accent)':'var(--border)'}`,
+              background:activePh.id===p.id?'rgba(249,115,22,0.15)':'transparent',
+              color:activePh.id===p.id?'var(--accent)':'var(--muted)', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>
+            {p.name}
+          </button>
+        ))}
+        <span style={{fontSize:11, color:'var(--muted)', marginLeft:4}}>Running:</span>
+        {D.phases.running.map(p => (
+          <button key={p.id} onClick={() => { DB.save('forcedRunPhase', p.id); setForcePhase(n => n+1); }}
+            style={{padding:'3px 10px', borderRadius:20, border:`1px solid ${activeRunPh.id===p.id?'var(--accent)':'var(--border)'}`,
+              background:activeRunPh.id===p.id?'rgba(249,115,22,0.15)':'transparent',
+              color:activeRunPh.id===p.id?'var(--accent)':'var(--muted)', fontSize:11, fontWeight:600, cursor:'pointer', fontFamily:'var(--font)'}}>
+            {p.name}
+          </button>
+        ))}
       </div>
 
       {/* Day selector */}
       <div style={{display:'flex', gap:6, padding:'0 16px 4px'}}>
-        {[['pull','Pull','var(--pull)'],['push','Push','var(--push)'],['leg','Leg','var(--leg)']].map(([val, label, col]) => (
+        {[['pull','Pull','var(--pull)'],['push','Push','var(--push)'],['leg','Leg','var(--leg)'],['running','Running','var(--running)']].map(([val, label, col]) => (
           <button key={val} onClick={() => setSelected(val)} style={{flex:1, padding:'8px', borderRadius:10, border:`1px solid ${selected===val ? col : 'var(--border)'}`,
             background: selected===val ? `color-mix(in srgb, ${col} 15%, transparent)` : 'var(--surface)',
             color: selected===val ? col : 'var(--muted)', fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'var(--font)'}}>
@@ -1824,40 +1822,72 @@ function PlanScreen({ onNavigate }) {
         ))}
       </div>
 
-      <div className="section-label">Ejercicios — Próxima sesión</div>
-
-      {exList.map((ex, i) => {
-        const suggestion = getSuggestion(ex);
-        return (
-          <div key={ex.id} className="card" style={{margin:'0 16px 8px', padding:'12px 14px'}}>
-            <div style={{display:'flex', alignItems:'flex-start', gap:10}}>
-              <div style={{width:26, height:26, borderRadius:'50%', background:`${typeColor(selected)}20`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:typeColor(selected), flexShrink:0, marginTop:2}}>{i+1}</div>
-              <div style={{flex:1, minWidth:0}}>
-                <div style={{display:'flex', alignItems:'center', gap:6, flexWrap:'wrap'}}>
-                  <span style={{fontSize:14, fontWeight:700}}>{ex.name}</span>
-                  {ex.isCore && <span className="tag tag-new">Core</span>}
+      {selected === 'running' ? (
+        <>
+          <div className="section-label">Running — {activeRunPh?.name}</div>
+          <div className="card" style={{margin:'0 16px 8px'}}>
+            <div style={{display:'flex', flexDirection:'column', gap:10}}>
+              {[['Miércoles mañana','30 min suave'],['Domingo tarde','35 min suave']].map(([dia, dur]) => (
+                <div key={dia} style={{display:'flex', gap:10, alignItems:'center'}}>
+                  <div style={{width:8, height:8, borderRadius:'50%', background:'var(--running)', flexShrink:0}}/>
+                  <div>
+                    <div style={{fontSize:13, fontWeight:600}}>{dia}</div>
+                    <div style={{fontSize:12, color:'var(--muted)'}}>{dur} · ritmo conversacional</div>
+                  </div>
                 </div>
-                <div style={{fontSize:12, color:'var(--muted)', marginTop:3}}>
-                  {ex.isCore ? '3×45s plancha + 3×12 hollow rocks' : `${ex.series} series × ${ex.reps || 15} reps`}
-                </div>
-                {ex.notes && <div style={{fontSize:11, color:'var(--muted2)', marginTop:4, fontStyle:'italic'}}>{ex.notes}</div>}
-              </div>
-              <div style={{textAlign:'right', flexShrink:0}}>
-                {!ex.isCore && suggestion && (
-                  <>
-                    {suggestion.prevWeight > 0 && <div style={{fontFamily:'var(--font-mono)', fontSize:15, fontWeight:700}}>{suggestion.prevWeight}kg</div>}
-                    <div style={{fontSize:11, fontWeight:600, color:suggestion.color, marginTop:2}}>{suggestion.suggestion}</div>
-                  </>
-                )}
-              </div>
+              ))}
             </div>
+            {activeRunPh?.description && <div style={{marginTop:10, padding:'8px 10px', background:'rgba(249,115,22,0.07)', borderRadius:8, fontSize:12, color:'var(--muted2)'}}>{activeRunPh.description}</div>}
           </div>
-        );
-      })}
+          {DB.getRunSessions().sort((a,b) => b.date.localeCompare(a.date)).slice(0,4).map((s, i) => (
+            <div key={i} style={{display:'flex', padding:'10px 20px', borderBottom:'1px solid var(--border)', gap:12, alignItems:'center'}}>
+              <div style={{fontSize:12, color:'var(--muted)', width:56, flexShrink:0}}>{formatDate(s.date)}</div>
+              <div style={{fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, color:'var(--running)'}}>{s.pace}</div>
+              <div style={{fontSize:13, color:'var(--muted)'}}>{s.distance}km</div>
+              <div style={{fontSize:11, color:'var(--muted2)', flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{s.notes}</div>
+            </div>
+          ))}
+        </>
+      ) : (
+        <>
+          <div className="section-label">Ejercicios — Próxima sesión</div>
+          {exList.map((ex, i) => {
+            const suggestion = getSuggestion(ex);
+            return (
+              <div key={ex.id} className="card" style={{margin:'0 16px 8px', padding:'12px 14px'}}>
+                <div style={{display:'flex', alignItems:'flex-start', gap:10}}>
+                  <div style={{width:26, height:26, borderRadius:'50%', background:`${typeColor(selected)}20`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700, color:typeColor(selected), flexShrink:0, marginTop:2}}>{i+1}</div>
+                  <div style={{flex:1, minWidth:0}}>
+                    <div style={{display:'flex', alignItems:'center', gap:6, flexWrap:'wrap'}}>
+                      <span style={{fontSize:14, fontWeight:700}}>{ex.name}</span>
+                      {ex.isCore && <span className="tag tag-new">Core</span>}
+                    </div>
+                    <div style={{fontSize:12, color:'var(--muted)', marginTop:3}}>
+                      {ex.isCore ? '3×45s plancha + 3×12 hollow rocks' : `${ex.series} series × ${ex.reps || 15} reps`}
+                    </div>
+                    {ex.notes && <div style={{fontSize:11, color:'var(--muted2)', marginTop:4, fontStyle:'italic'}}>{ex.notes}</div>}
+                  </div>
+                  <div style={{textAlign:'right', flexShrink:0}}>
+                    {!ex.isCore && suggestion && (
+                      <>
+                        {suggestion.prevWeight > 0 && <div style={{fontFamily:'var(--font-mono)', fontSize:15, fontWeight:700}}>{suggestion.prevWeight}kg</div>}
+                        <div style={{fontSize:11, fontWeight:600, color:suggestion.color, marginTop:2}}>{suggestion.suggestion}</div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </>
+      )}
 
       <div style={{padding:'8px 16px 16px'}}>
-        <button className="btn btn-primary btn-full" onClick={() => onNavigate('session', {type: selected})}>
-          Iniciar sesión {typeLabel(selected)} Day
+        <button className="btn btn-primary btn-full" onClick={() => {
+          if (selected === 'running') onNavigate('run-log');
+          else onNavigate('session', {type: selected});
+        }}>
+          {selected === 'running' ? '🏃 Registrar sesión Running' : `Iniciar sesión ${typeLabel(selected)} Day`}
         </button>
       </div>
     </div>
