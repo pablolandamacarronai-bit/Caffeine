@@ -7,6 +7,8 @@
 <meta name="theme-color" content="#0a0a0a">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 <title>Training Tracker — Pablo</title>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
@@ -2530,7 +2532,7 @@ function CalendarScreen({ onNavigate }) {
 }
 
 // ====================================================
-// SCREEN: LIVE RUN — GPS tracking with Wake Lock
+// SCREEN: LIVE RUN — GPS tracking + Leaflet map + Wake Lock
 // ====================================================
 function LiveRunScreen({ onBack }) {
   const [status, setStatus] = useState('idle'); // idle | running | paused | done
@@ -2546,6 +2548,14 @@ function LiveRunScreen({ onBack }) {
   const watchRef = useRef(null);
   const wakeLockRef = useRef(null);
   const lastPosRef = useRef(null);
+  const coordsRef = useRef([]);
+  const statusRef = useRef('idle');
+
+  // Leaflet refs
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
+  const polylineRef = useRef(null);
+  const dotMarkerRef = useRef(null);
 
   function haversine(lat1, lon1, lat2, lon2) {
     const R = 6371000;
@@ -2572,6 +2582,26 @@ function LiveRunScreen({ onBack }) {
     return `${Math.floor(spk/60)}:${String(Math.round(spk%60)).padStart(2,'0')}`;
   }
 
+  // Init Leaflet map once on mount
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+    const map = L.map(mapContainerRef.current, { zoomControl: false, attributionControl: false })
+      .setView([40.416, -3.703], 15);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+    const polyline = L.polyline([], { color: '#f97316', weight: 5, opacity: 0.9, lineJoin: 'round' }).addTo(map);
+    mapRef.current = map;
+    polylineRef.current = polyline;
+    // Try to center on current position
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => map.setView([pos.coords.latitude, pos.coords.longitude], 16),
+        () => {},
+        { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+      );
+    }
+    return () => { map.remove(); mapRef.current = null; polylineRef.current = null; dotMarkerRef.current = null; };
+  }, []);
+
   async function acquireWakeLock() {
     if ('wakeLock' in navigator) {
       try { wakeLockRef.current = await navigator.wakeLock.request('screen'); } catch(e) {}
@@ -2591,12 +2621,22 @@ function LiveRunScreen({ onBack }) {
         const last = lastPosRef.current;
         if (last) {
           const d = haversine(last.lat, last.lon, lat, lon);
-          if (d > 1 && d < 200) {
-            distRef.current += d;
-            setDistance(distRef.current);
-          }
+          if (d > 1 && d < 200) { distRef.current += d; setDistance(distRef.current); }
         }
         lastPosRef.current = { lat, lon };
+        coordsRef.current.push([lat, lon]);
+        // Update map polyline and dot
+        if (polylineRef.current) polylineRef.current.setLatLngs(coordsRef.current);
+        if (dotMarkerRef.current) {
+          dotMarkerRef.current.setLatLng([lat, lon]);
+        } else if (mapRef.current) {
+          dotMarkerRef.current = L.circleMarker([lat, lon], {
+            radius: 9, color: '#fff', fillColor: '#f97316', fillOpacity: 1, weight: 2
+          }).addTo(mapRef.current);
+        }
+        if (mapRef.current && statusRef.current === 'running') {
+          mapRef.current.panTo([lat, lon], { animate: true, duration: 0.5 });
+        }
       },
       err => setGpsError(err.message),
       { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
@@ -2604,51 +2644,34 @@ function LiveRunScreen({ onBack }) {
   }
 
   function stopGps() {
-    if (watchRef.current !== null) {
-      navigator.geolocation.clearWatch(watchRef.current);
-      watchRef.current = null;
-    }
+    if (watchRef.current !== null) { navigator.geolocation.clearWatch(watchRef.current); watchRef.current = null; }
   }
 
   function startTimer() {
-    timerRef.current = setInterval(() => {
-      elapsedRef.current += 1;
-      setElapsed(e => e + 1);
-    }, 1000);
+    timerRef.current = setInterval(() => { elapsedRef.current += 1; setElapsed(e => e + 1); }, 1000);
   }
 
-  function stopTimer() {
-    clearInterval(timerRef.current);
-    timerRef.current = null;
-  }
+  function stopTimer() { clearInterval(timerRef.current); timerRef.current = null; }
+
+  function changeStatus(s) { statusRef.current = s; setStatus(s); }
 
   async function handleStart() {
-    await acquireWakeLock();
-    startGps();
-    startTimer();
-    setStatus('running');
-    setGpsError(null);
+    await acquireWakeLock(); startGps(); startTimer(); changeStatus('running'); setGpsError(null);
   }
 
   function handlePause() {
-    stopTimer();
-    stopGps();
-    lastPosRef.current = null;
-    setStatus('paused');
+    stopTimer(); stopGps(); lastPosRef.current = null; changeStatus('paused');
   }
 
   async function handleResume() {
-    await acquireWakeLock();
-    startGps();
-    startTimer();
-    setStatus('running');
+    await acquireWakeLock(); startGps(); startTimer(); changeStatus('running');
   }
 
   function handleStop() {
-    stopTimer();
-    stopGps();
-    releaseWakeLock();
-    setStatus('done');
+    stopTimer(); stopGps(); releaseWakeLock(); changeStatus('done');
+    if (polylineRef.current && coordsRef.current.length > 1 && mapRef.current) {
+      setTimeout(() => mapRef.current.fitBounds(polylineRef.current.getBounds(), { padding: [20, 20], animate: true }), 100);
+    }
   }
 
   function handleSave() {
@@ -2656,16 +2679,8 @@ function LiveRunScreen({ onBack }) {
     const t = elapsedRef.current;
     const p = calcPace();
     DB.saveRunSession({
-      id: `r${Date.now()}`,
-      date: isoDate(new Date()),
-      distance: distKm,
-      time: t,
-      pace: p,
-      elevation: 0,
-      location: 'GPS',
-      type: 'easy',
-      notes,
-      gps: true
+      id: `r${Date.now()}`, date: isoDate(new Date()), distance: distKm, time: t, pace: p,
+      elevation: 0, location: 'GPS', type: 'easy', notes, gps: true, coords: coordsRef.current
     });
     setSaved(true);
     setTimeout(() => onBack(), 1400);
@@ -2689,92 +2704,70 @@ function LiveRunScreen({ onBack }) {
   }
 
   return (
-    <div className="screen">
-      <div style={{padding:'16px 20px 12px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:12}}>
+    <div className="screen" style={{display:'flex', flexDirection:'column'}}>
+      {/* Header */}
+      <div style={{padding:'12px 20px 10px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:12, flexShrink:0}}>
         <button className="back-btn" onClick={() => { stopTimer(); stopGps(); releaseWakeLock(); onBack(); }}>‹ Inicio</button>
         <div style={{flex:1}}></div>
         <span style={{fontSize:13, fontWeight:700, color:'var(--running)', textTransform:'uppercase', letterSpacing:'0.06em'}}>GPS en vivo</span>
       </div>
 
-      {/* Main metrics */}
-      <div style={{padding:'32px 20px 20px', display:'flex', flexDirection:'column', alignItems:'center', gap:6}}>
-        <div style={{fontSize:72, fontWeight:700, fontFamily:'var(--font-mono)', letterSpacing:'-2px', lineHeight:1, color:'var(--text)'}}>
-          {fmtTime(elapsed)}
-        </div>
-        <div style={{fontSize:12, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8}}>Tiempo</div>
+      {/* Map */}
+      <div ref={mapContainerRef} style={{width:'100%', height:230, flexShrink:0, background:'#111'}}></div>
 
-        <div style={{display:'flex', gap:48, marginTop:12}}>
-          <div style={{textAlign:'center'}}>
-            <div style={{fontSize:44, fontWeight:700, fontFamily:'var(--font-mono)', lineHeight:1}}>{distKm}</div>
-            <div style={{fontSize:12, color:'var(--muted)', marginTop:2}}>km</div>
-          </div>
-          <div style={{width:1, background:'var(--border)'}}></div>
-          <div style={{textAlign:'center'}}>
-            <div style={{fontSize:44, fontWeight:700, fontFamily:'var(--font-mono)', lineHeight:1, color: pace !== '--:--' ? paceColor(pace) : 'var(--muted2)'}}>
-              {pace}
+      {/* Metrics bar */}
+      <div style={{display:'flex', alignItems:'stretch', borderBottom:'1px solid var(--border)', flexShrink:0}}>
+        {[
+          { val: fmtTime(elapsed), label: 'tiempo' },
+          { val: distKm, label: 'km' },
+          { val: pace, label: 'min/km', colored: true },
+        ].map((m, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <div style={{width:1, background:'var(--border)'}}></div>}
+            <div style={{flex:1, textAlign:'center', padding:'14px 8px 10px'}}>
+              <div style={{fontSize:36, fontWeight:700, fontFamily:'var(--font-mono)', letterSpacing:'-1px', lineHeight:1, color: m.colored && pace !== '--:--' ? paceColor(pace) : 'var(--text)'}}>
+                {m.val}
+              </div>
+              <div style={{fontSize:11, color:'var(--muted)', marginTop:3, textTransform:'uppercase', letterSpacing:'0.08em'}}>{m.label}</div>
             </div>
-            <div style={{fontSize:12, color:'var(--muted)', marginTop:2}}>min/km</div>
-          </div>
-        </div>
+          </React.Fragment>
+        ))}
+      </div>
 
-        <div style={{marginTop:16, fontSize:13, color: gpsError ? '#f87171' : status === 'running' ? '#4ade80' : 'var(--muted)', display:'flex', alignItems:'center', gap:6}}>
-          {gpsError ? `⚠ ${gpsError}` : status === 'running' ? '● GPS activo' : status === 'paused' ? '⏸ Pausado' : status === 'done' ? '✓ Finalizado' : 'Mantén la pantalla encendida durante el recorrido'}
-        </div>
+      {/* GPS status */}
+      <div style={{textAlign:'center', padding:'8px 0 4px', fontSize:12, flexShrink:0,
+        color: gpsError ? '#f87171' : status === 'running' ? '#4ade80' : 'var(--muted)'}}>
+        {gpsError ? `⚠ ${gpsError}` : status === 'running' ? '● GPS activo' : status === 'paused' ? '⏸ Pausado' : status === 'done' ? '✓ Finalizado' : 'Presiona Iniciar para comenzar'}
       </div>
 
       {/* Controls */}
-      <div style={{padding:'8px 20px 24px', display:'flex', flexDirection:'column', gap:12}}>
+      <div style={{padding:'8px 16px 16px', display:'flex', flexDirection:'column', gap:10}}>
         {status === 'idle' && (
-          <button className="btn btn-primary btn-full" style={{fontSize:18, padding:'18px'}} onClick={handleStart}>
+          <button className="btn btn-primary btn-full" style={{fontSize:17, padding:'15px'}} onClick={handleStart}>
             Iniciar
           </button>
         )}
         {status === 'running' && (
-          <div style={{display:'flex', gap:12}}>
-            <button className="btn btn-full" style={{flex:1, fontSize:16, padding:'16px', background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:'var(--radius)', color:'var(--text)', cursor:'pointer'}} onClick={handlePause}>
-              Pausa
-            </button>
-            <button className="btn btn-full" style={{flex:1, fontSize:16, padding:'16px', background:'#ef4444', color:'#fff', border:'none', borderRadius:'var(--radius)', cursor:'pointer'}} onClick={handleStop}>
-              Finalizar
-            </button>
+          <div style={{display:'flex', gap:10}}>
+            <button className="btn btn-full" style={{flex:1, fontSize:15, padding:'13px', background:'var(--surface2)', border:'1px solid var(--border)', color:'var(--text)'}} onClick={handlePause}>Pausa</button>
+            <button className="btn btn-full" style={{flex:1, fontSize:15, padding:'13px', background:'#ef4444', border:'none', color:'#fff'}} onClick={handleStop}>Finalizar</button>
           </div>
         )}
         {status === 'paused' && (
-          <div style={{display:'flex', gap:12}}>
-            <button className="btn btn-primary btn-full" style={{flex:1, fontSize:16, padding:'16px'}} onClick={handleResume}>
-              Continuar
-            </button>
-            <button className="btn btn-full" style={{flex:1, fontSize:16, padding:'16px', background:'#ef4444', color:'#fff', border:'none', borderRadius:'var(--radius)', cursor:'pointer'}} onClick={handleStop}>
-              Finalizar
-            </button>
+          <div style={{display:'flex', gap:10}}>
+            <button className="btn btn-primary btn-full" style={{flex:1, fontSize:15, padding:'13px'}} onClick={handleResume}>Continuar</button>
+            <button className="btn btn-full" style={{flex:1, fontSize:15, padding:'13px', background:'#ef4444', border:'none', color:'#fff'}} onClick={handleStop}>Finalizar</button>
           </div>
         )}
         {status === 'done' && (
           <>
-            <div style={{padding:'16px', background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)'}}>
-              <div style={{fontSize:12, color:'var(--muted)', marginBottom:8, textTransform:'uppercase', letterSpacing:'0.06em'}}>Resumen</div>
-              <div style={{display:'flex', gap:0, justifyContent:'space-between'}}>
-                <div style={{textAlign:'center'}}>
-                  <div style={{fontSize:22, fontWeight:700, fontFamily:'var(--font-mono)'}}>{fmtTime(elapsed)}</div>
-                  <div style={{fontSize:11, color:'var(--muted)'}}>tiempo</div>
-                </div>
-                <div style={{textAlign:'center'}}>
-                  <div style={{fontSize:22, fontWeight:700, fontFamily:'var(--font-mono)'}}>{distKm}</div>
-                  <div style={{fontSize:11, color:'var(--muted)'}}>km</div>
-                </div>
-                <div style={{textAlign:'center'}}>
-                  <div style={{fontSize:22, fontWeight:700, fontFamily:'var(--font-mono)', color: pace !== '--:--' ? paceColor(pace) : undefined}}>{pace}</div>
-                  <div style={{fontSize:11, color:'var(--muted)'}}>min/km</div>
-                </div>
-              </div>
-            </div>
             <textarea
               placeholder="Notas — cómo ha ido, sensaciones..."
               value={notes}
               onChange={e => setNotes(e.target.value)}
-              style={{width:'100%', minHeight:72, background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)', color:'var(--text)', padding:'10px 12px', fontSize:14, resize:'vertical', boxSizing:'border-box'}}
+              style={{width:'100%', minHeight:60, background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)', color:'var(--text)', padding:'10px 12px', fontSize:14, resize:'none', boxSizing:'border-box'}}
             />
-            <button className="btn btn-primary btn-full" style={{fontSize:16, padding:'16px'}} onClick={handleSave}>
+            <button className="btn btn-primary btn-full" style={{fontSize:16, padding:'14px'}} onClick={handleSave}>
               Guardar sesión
             </button>
           </>
