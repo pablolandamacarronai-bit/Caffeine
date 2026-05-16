@@ -1882,13 +1882,21 @@ function PlanScreen({ onNavigate }) {
         </>
       )}
 
-      <div style={{padding:'8px 16px 16px'}}>
-        <button className="btn btn-primary btn-full" onClick={() => {
-          if (selected === 'running') onNavigate('run-log');
-          else onNavigate('session', {type: selected});
-        }}>
-          {selected === 'running' ? '🏃 Registrar sesión Running' : `Iniciar sesión ${typeLabel(selected)} Day`}
-        </button>
+      <div style={{padding:'8px 16px 16px', display:'flex', flexDirection:'column', gap:10}}>
+        {selected === 'running' ? (
+          <>
+            <button className="btn btn-primary btn-full" onClick={() => onNavigate('live-run')}>
+              🛰 GPS en vivo
+            </button>
+            <button className="btn btn-full" style={{background:'var(--surface2)', border:'1px solid var(--border)', color:'var(--text)', borderRadius:'var(--radius)', padding:'12px', fontSize:15, cursor:'pointer'}} onClick={() => onNavigate('run-log')}>
+              🏃 Registrar manualmente
+            </button>
+          </>
+        ) : (
+          <button className="btn btn-primary btn-full" onClick={() => onNavigate('session', {type: selected})}>
+            {`Iniciar sesión ${typeLabel(selected)} Day`}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -2522,6 +2530,261 @@ function CalendarScreen({ onNavigate }) {
 }
 
 // ====================================================
+// SCREEN: LIVE RUN — GPS tracking with Wake Lock
+// ====================================================
+function LiveRunScreen({ onBack }) {
+  const [status, setStatus] = useState('idle'); // idle | running | paused | done
+  const [elapsed, setElapsed] = useState(0);
+  const [distance, setDistance] = useState(0);
+  const [notes, setNotes] = useState('');
+  const [saved, setSaved] = useState(false);
+  const [gpsError, setGpsError] = useState(null);
+
+  const elapsedRef = useRef(0);
+  const distRef = useRef(0);
+  const timerRef = useRef(null);
+  const watchRef = useRef(null);
+  const wakeLockRef = useRef(null);
+  const lastPosRef = useRef(null);
+
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const toRad = x => x * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function fmtTime(secs) {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  function calcPace() {
+    const d = distRef.current / 1000;
+    const t = elapsedRef.current;
+    if (d < 0.02 || t < 5) return '--:--';
+    const spk = t / d;
+    return `${Math.floor(spk/60)}:${String(Math.round(spk%60)).padStart(2,'0')}`;
+  }
+
+  async function acquireWakeLock() {
+    if ('wakeLock' in navigator) {
+      try { wakeLockRef.current = await navigator.wakeLock.request('screen'); } catch(e) {}
+    }
+  }
+
+  function releaseWakeLock() {
+    if (wakeLockRef.current) { wakeLockRef.current.release(); wakeLockRef.current = null; }
+  }
+
+  function startGps() {
+    if (!navigator.geolocation) { setGpsError('GPS no disponible en este dispositivo'); return; }
+    watchRef.current = navigator.geolocation.watchPosition(
+      pos => {
+        const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+        if (accuracy > 40) return;
+        const last = lastPosRef.current;
+        if (last) {
+          const d = haversine(last.lat, last.lon, lat, lon);
+          if (d > 1 && d < 200) {
+            distRef.current += d;
+            setDistance(distRef.current);
+          }
+        }
+        lastPosRef.current = { lat, lon };
+      },
+      err => setGpsError(err.message),
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+    );
+  }
+
+  function stopGps() {
+    if (watchRef.current !== null) {
+      navigator.geolocation.clearWatch(watchRef.current);
+      watchRef.current = null;
+    }
+  }
+
+  function startTimer() {
+    timerRef.current = setInterval(() => {
+      elapsedRef.current += 1;
+      setElapsed(e => e + 1);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerRef.current);
+    timerRef.current = null;
+  }
+
+  async function handleStart() {
+    await acquireWakeLock();
+    startGps();
+    startTimer();
+    setStatus('running');
+    setGpsError(null);
+  }
+
+  function handlePause() {
+    stopTimer();
+    stopGps();
+    lastPosRef.current = null;
+    setStatus('paused');
+  }
+
+  async function handleResume() {
+    await acquireWakeLock();
+    startGps();
+    startTimer();
+    setStatus('running');
+  }
+
+  function handleStop() {
+    stopTimer();
+    stopGps();
+    releaseWakeLock();
+    setStatus('done');
+  }
+
+  function handleSave() {
+    const distKm = Math.round(distRef.current / 10) / 100;
+    const t = elapsedRef.current;
+    const p = calcPace();
+    DB.saveRunSession({
+      id: `r${Date.now()}`,
+      date: isoDate(new Date()),
+      distance: distKm,
+      time: t,
+      pace: p,
+      elevation: 0,
+      location: 'GPS',
+      type: 'easy',
+      notes,
+      gps: true
+    });
+    setSaved(true);
+    setTimeout(() => onBack(), 1400);
+  }
+
+  useEffect(() => () => { stopTimer(); stopGps(); releaseWakeLock(); }, []);
+
+  const distKm = (distance / 1000).toFixed(2);
+  const pace = calcPace();
+
+  if (saved) {
+    return (
+      <div className="screen" style={{display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16}}>
+        <div style={{fontSize:56}}>🏃</div>
+        <div style={{fontSize:20, fontWeight:700}}>Sesión guardada</div>
+        <div style={{fontSize:14, color:'var(--muted)'}}>
+          {distKm} km · {fmtTime(elapsedRef.current)} · {pace} /km
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="screen">
+      <div style={{padding:'16px 20px 12px', borderBottom:'1px solid var(--border)', display:'flex', alignItems:'center', gap:12}}>
+        <button className="back-btn" onClick={() => { stopTimer(); stopGps(); releaseWakeLock(); onBack(); }}>‹ Inicio</button>
+        <div style={{flex:1}}></div>
+        <span style={{fontSize:13, fontWeight:700, color:'var(--running)', textTransform:'uppercase', letterSpacing:'0.06em'}}>GPS en vivo</span>
+      </div>
+
+      {/* Main metrics */}
+      <div style={{padding:'32px 20px 20px', display:'flex', flexDirection:'column', alignItems:'center', gap:6}}>
+        <div style={{fontSize:72, fontWeight:700, fontFamily:'var(--font-mono)', letterSpacing:'-2px', lineHeight:1, color:'var(--text)'}}>
+          {fmtTime(elapsed)}
+        </div>
+        <div style={{fontSize:12, color:'var(--muted)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8}}>Tiempo</div>
+
+        <div style={{display:'flex', gap:48, marginTop:12}}>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontSize:44, fontWeight:700, fontFamily:'var(--font-mono)', lineHeight:1}}>{distKm}</div>
+            <div style={{fontSize:12, color:'var(--muted)', marginTop:2}}>km</div>
+          </div>
+          <div style={{width:1, background:'var(--border)'}}></div>
+          <div style={{textAlign:'center'}}>
+            <div style={{fontSize:44, fontWeight:700, fontFamily:'var(--font-mono)', lineHeight:1, color: pace !== '--:--' ? paceColor(pace) : 'var(--muted2)'}}>
+              {pace}
+            </div>
+            <div style={{fontSize:12, color:'var(--muted)', marginTop:2}}>min/km</div>
+          </div>
+        </div>
+
+        <div style={{marginTop:16, fontSize:13, color: gpsError ? '#f87171' : status === 'running' ? '#4ade80' : 'var(--muted)', display:'flex', alignItems:'center', gap:6}}>
+          {gpsError ? `⚠ ${gpsError}` : status === 'running' ? '● GPS activo' : status === 'paused' ? '⏸ Pausado' : status === 'done' ? '✓ Finalizado' : 'Mantén la pantalla encendida durante el recorrido'}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div style={{padding:'8px 20px 24px', display:'flex', flexDirection:'column', gap:12}}>
+        {status === 'idle' && (
+          <button className="btn btn-primary btn-full" style={{fontSize:18, padding:'18px'}} onClick={handleStart}>
+            Iniciar
+          </button>
+        )}
+        {status === 'running' && (
+          <div style={{display:'flex', gap:12}}>
+            <button className="btn btn-full" style={{flex:1, fontSize:16, padding:'16px', background:'var(--surface2)', border:'1px solid var(--border)', borderRadius:'var(--radius)', color:'var(--text)', cursor:'pointer'}} onClick={handlePause}>
+              Pausa
+            </button>
+            <button className="btn btn-full" style={{flex:1, fontSize:16, padding:'16px', background:'#ef4444', color:'#fff', border:'none', borderRadius:'var(--radius)', cursor:'pointer'}} onClick={handleStop}>
+              Finalizar
+            </button>
+          </div>
+        )}
+        {status === 'paused' && (
+          <div style={{display:'flex', gap:12}}>
+            <button className="btn btn-primary btn-full" style={{flex:1, fontSize:16, padding:'16px'}} onClick={handleResume}>
+              Continuar
+            </button>
+            <button className="btn btn-full" style={{flex:1, fontSize:16, padding:'16px', background:'#ef4444', color:'#fff', border:'none', borderRadius:'var(--radius)', cursor:'pointer'}} onClick={handleStop}>
+              Finalizar
+            </button>
+          </div>
+        )}
+        {status === 'done' && (
+          <>
+            <div style={{padding:'16px', background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)'}}>
+              <div style={{fontSize:12, color:'var(--muted)', marginBottom:8, textTransform:'uppercase', letterSpacing:'0.06em'}}>Resumen</div>
+              <div style={{display:'flex', gap:0, justifyContent:'space-between'}}>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontSize:22, fontWeight:700, fontFamily:'var(--font-mono)'}}>{fmtTime(elapsed)}</div>
+                  <div style={{fontSize:11, color:'var(--muted)'}}>tiempo</div>
+                </div>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontSize:22, fontWeight:700, fontFamily:'var(--font-mono)'}}>{distKm}</div>
+                  <div style={{fontSize:11, color:'var(--muted)'}}>km</div>
+                </div>
+                <div style={{textAlign:'center'}}>
+                  <div style={{fontSize:22, fontWeight:700, fontFamily:'var(--font-mono)', color: pace !== '--:--' ? paceColor(pace) : undefined}}>{pace}</div>
+                  <div style={{fontSize:11, color:'var(--muted)'}}>min/km</div>
+                </div>
+              </div>
+            </div>
+            <textarea
+              placeholder="Notas — cómo ha ido, sensaciones..."
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              style={{width:'100%', minHeight:72, background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'var(--radius)', color:'var(--text)', padding:'10px 12px', fontSize:14, resize:'vertical', boxSizing:'border-box'}}
+            />
+            <button className="btn btn-primary btn-full" style={{fontSize:16, padding:'16px'}} onClick={handleSave}>
+              Guardar sesión
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ====================================================
 // MAIN APP — navigation
 // ====================================================
 function App() {
@@ -2573,6 +2836,8 @@ function App() {
     content = <SessionScreen key={`session-${subParams?.type}`} params={subParams} onNavigate={navigate} onBack={goBack}/>;
   } else if (subScreen === 'run-log') {
     content = <RunLogScreen onBack={goBack}/>;
+  } else if (subScreen === 'live-run') {
+    content = <LiveRunScreen onBack={goBack}/>;
   } else if (subScreen === 'run-history') {
     content = <HistoryScreen onNavigate={navigate}/>;
   } else {
